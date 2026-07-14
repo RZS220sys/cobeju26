@@ -14,6 +14,7 @@ This project (cobeju26) is about such a game. Rules:
   - Keep the project properly structured. Avoid adding thousands of lines of code to a single file. Prefer using `class_name` because that will make it easier to discover classes, etc. Avoid naming your classes same name as builtin godot stuff.
   - Make sure the game mechanism, lores and story is actually enjoyable by the users. For the most strictest players, you have to keep them happy/entertained for at least 2 hours. For the normal players, at least days. And for the players who become the game's fans, you should make sure the game has the potential to properly be expanded by future updates, add new mechanisms, features, etc. Be creative and fun, but most importantly: **meaningful**. Perhaps the game can have lots of psychological aspects, lessons, conclusions, etc. so it's not meaningless to play it.
   - You do **NOT** have to constantly report back to the user. As you will be on your own and work on the project on your own. This will be your own project.
+  - Keep pursuing a single goal. Don't constantly change your final goal, etc. Have persistency. The game must be production-ready AND playable. DO NOT BE LAZY.
 
 
 ## Tools
@@ -29,6 +30,7 @@ After adding new files, assets, code, etc, you do **not** need to scan every sin
 it automatically re-scans, checks for errors, warnings, etc.
 If you see this message: `wgodot: No running WGodot editor was found for this project.`; then just simply launch the `project.godot` file at the root of this repo in the background. if godot hangs or becomes unresponsive, you can kill it and launch it again.
 You really don't need to read the source code of my fork, but if it's truly required: `E:\woto\programming\cpp\wgodot`.
+If you found a bug in its C++ source code, feel free to fix, stop background godot process (important!), then call its `./build_godot.ps1` script (it builds editor, and the `godot` command in my path is automatically calling that), and then open it up again (you don't needs its templates now because you are not trying to export it).
 
 You are prohibited from using winapi/powershell for screenshot, user input, etc. Use the wgodot's native commands, they are far more efficient.
 
