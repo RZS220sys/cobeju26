@@ -27,6 +27,21 @@ For the full agent skill, check [wgodot-cli skill](./skills\wgodot-cli\SKILL.md)
 After adding new files, assets, code, etc, you do **not** need to scan every single files individually or run normal godot re-import commands. this command is your best friend:
 `godot --wg check`
 it automatically re-scans, checks for errors, warnings, etc.
+If you see this message: `wgodot: No running WGodot editor was found for this project.`; then just simply launch the `project.godot` file at the root of this repo in the background. if godot hangs or becomes unresponsive, you can kill it and launch it again.
+You really don't need to read the source code of my fork, but if it's truly required: `E:\woto\programming\cpp\wgodot`.
+
+You are prohibited from using winapi/powershell for screenshot, user input, etc. Use the wgodot's native commands, they are far more efficient.
+
+You are allowed to change the project's settings in the `project.godot` to your liking to make it fit the game style that you want to create. it's all up to you.
+
+Prefer using GDScript as much as possible, as it's going to be much easier to debug, put breakpoints, etc. Don't do dumb shit like this:
+
+```gd
+const SomeType = preload(res://some/path/some_type.gd)
+```
+
+Prefer using `class_name`; and while you are using that, then you no longer need to do these stuff.
+Keep constants to **real** primitive constant values, because WGodot has de-const feature for its export.
 
 ### CCL
 
@@ -48,7 +63,7 @@ Avoid naming your models or fields same name as builtin godot stuff, that will g
 
 ### Blender
 
-Blender v5.1.1 is installed on this machine, feel free to use it for assets and stuff.
+Blender v5.1.1 is installed on this machine, feel free to use it for assets and stuff (you can use its Python API, write/run Python scripts, etc).
 
 
 ### Image gen
