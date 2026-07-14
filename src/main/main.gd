@@ -1,12 +1,12 @@
-class_name PalimpsestApp
+class_name LumenfallApp
 extends Node
 
 
 @override
 func _ready() -> void:
 	_configure_input()
-	var director := GameDirector.new()
-	director.name = "GameDirector"
+	var director := LumenfallAdventureDirector.new()
+	director.name = "AdventureDirector"
 	add_child(director)
 
 
@@ -21,6 +21,8 @@ func _configure_input() -> void:
 	_add_key_action(&"resonance", KEY_Q)
 	_add_key_action(&"interact", KEY_E)
 	_add_key_action(&"pause_game", KEY_ESCAPE)
+	_add_key_action(&"adventure_jump", KEY_SPACE)
+	_add_key_action(&"adventure_sprint", KEY_SHIFT)
 	_add_joy_axis(&"move_left", JOY_AXIS_LEFT_X, -1.0)
 	_add_joy_axis(&"move_right", JOY_AXIS_LEFT_X, 1.0)
 	_add_joy_axis(&"move_forward", JOY_AXIS_LEFT_Y, -1.0)
