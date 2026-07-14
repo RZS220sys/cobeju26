@@ -1,9 +1,13 @@
 # Status
 
-- Goal: production-ready PC release candidate.
-- Current: v1.0.0 release candidate; final verification passed 2026-07-14.
-- Locked concept: PALIMPSEST, 3D action-exploration roguelite.
-- Built: full expedition loop, 3 enemy families + boss, 11 boons, seeded arena, CCL persistence/migration, workshop meta progression, 24 lore records, 4-step campaign, 3 endings, archive/settings/credits/pause, procedural audio.
-- Tests: WGodot check clean; 7 headless suites pass; 60s live combat soak clean; full win/verdict/save/reload/workshop path clean.
-- Release: Windows x86_64 embedded-PCK export + exported headless startup passed; 1280×720 and 1920×1080 UI checked.
-- Known bugs: none open.
+- Goal: production-ready third-person open-world adventure.
+- Current: v1 rejected by hands-on playtest; ground-up LUMENFALL redesign active 2026-07-14.
+- Proof gate passed: camera-relative third-person controller, stable orbit/zoom/collision, safe village, recognizable animated hero/NPCs, unlimited 25-chunk streaming.
+- Playable path: summoning → Nia/Waystone → 3 riftglass → physical Bram bench/lens → Mara escort/hound/memory → 3 selectable regional instruments → rescue Iven/Sola/Orin → forge Memory Compass → floating Echo Causeway puzzle → persistent shelter/bridge/witness choice.
+- Systems: named CCL profiles/backups/confirmed reset+delete, autosave, pause/traveler book, vitality/combat telegraphs, region-aware prime-length soundscape, saved volume/orbit/FOV/invert/fullscreen/reduce-motion settings.
+- World: Hearthmere + Glasswood/Amberfen/Bellscar biomes and authored landmarks; 16 Blender GLBs; 2 authored terrain textures.
+- Validation: `godot --wg check` clean; headless 6-suite test completes all quest branches through Memory Compass with no errors/leaks.
+- Current: expand chapters, companion/event depth, rigged animation/VFX/audio polish, settings/accessibility, performance/export/release gates.
+- Preserve only: strict typed architecture, CCL generator workflow, WGodot automation, export pipeline.
+- Remove after replacement: top-down arena, abstract Archive story/UI/audio, single-slot save, menu workshop.
+- Source of truth: `docs/REDESIGN.md`.
