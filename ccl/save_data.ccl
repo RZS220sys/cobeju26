@@ -6,23 +6,23 @@
 #[$gd:AddAnnotation("@obfuscate")]
 #[$gd:AddAnnotation("@obfuscate_path")]
 
-model LumenfallProfileSummary {
-	ProfileId: string;
+model LumenfallWorldSummary {
+	WorldId: string;
 	DisplayName: string;
 	PlayedSeconds: float64;
 	QuestStage: int32;
 	LastPlayedUnix: int64;
 }
 
-model LumenfallProfileIndex {
+model LumenfallWorldIndex {
 	SchemaVersion: int32;
-	Profiles: LumenfallProfileSummary[];
-	LastProfileId: string;
+	Worlds: LumenfallWorldSummary[];
+	LastWorldId: string;
 }
 
-model LumenfallSaveData {
+model LumenfallWorldState {
 	SchemaVersion: int32;
-	ProfileId: string;
+	WorldId: string;
 	DisplayName: string;
 	PlayedSeconds: float64;
 	PlayerX: float32;
@@ -41,6 +41,24 @@ model LumenfallSaveData {
 	MaximumHealth: float32;
 	LastPlayedUnix: int64;
 	TutorialStage: int32;
+}
+
+model LumenfallNpcState {
+	SchemaVersion: int32;
+	NpcId: int32;
+	Mood: int32;
+	Behavior: int32;
+	TrustPlayer: float32;
+	Fear: float32;
+	Hope: float32;
+	PositionX: float32;
+	PositionY: float32;
+	PositionZ: float32;
+	ImportantEventIds: int32[];
+	RelationshipNpcIds: int32[];
+	RelationshipValues: float32[];
+	ChoiceIds: int32[];
+	HasPosition: bool;
 }
 
 model LumenfallSettings {

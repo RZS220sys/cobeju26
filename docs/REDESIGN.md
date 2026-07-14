@@ -20,7 +20,7 @@ Audience: approachable enough for a child to move/explore; expressive characters
 - Streamed world chunks; no arena wall. Landmarks and roads guide without text dumps.
 - Dialogue max 1–2 short lines per beat; skippable. Story shown through action/cinematics/NPC behavior.
 - Workshop is Bram's physical forge. Currency is introduced by NPC + visible object before HUD count.
-- Named save profiles: create/load/delete/reset; autosave + backups.
+- Named worlds: create/load/delete/reset; each world is one portable folder with independent NPC state files.
 - Game UI uses illustrated fantasy frames, icons, motion, controller focus—not generic flat panels.
 - Music has multi-minute variation and contextual layers; ambience uses wind, birds, water, village work.
 
@@ -38,15 +38,16 @@ Explore → notice a lived problem → help a character → world physically cha
 
 ## Architecture
 
-- `src/core`: app/session/profile/gameplay catalogs.
-- `src/player`: controller, abilities, interaction, animation state.
-- `src/camera`: orbit/zoom/collision camera.
-- `src/world`: streaming terrain, regions, weather, encounters.
-- `src/characters`: NPC actors, schedules, dialogue, companion AI.
-- `src/quests`: event-driven objectives and cinematics.
-- `src/ui`: game-native HUD, menus, map, journal.
+- `src/domain`: one catalog/value concept per file; no runtime nodes.
+- `src/characters`: NPC inheritance, concrete characters, rigging, factories.
+- `src/gameplay`: player/combat/interaction/navigation/inventory/quest behavior.
+- `src/world`: composition, streaming, locations, travel, landmarks, environment.
+- `src/presentation`: HUD and focused menu/view controllers.
+- `src/application`: use cases spanning repositories.
+- `src/infrastructure`: CCL persistence and asset loading.
 - `assets/{models,textures,ui}`: authored runtime assets.
+- Detailed constraints: `docs/ARCHITECTURE.md`.
 
 ## First proof gate
 
-Fresh profile → cinematic summoning → free third-person village walk. Validate W/S/A/D camera-relative movement, continuous orbit, wheel zoom, camera collision, visible face, no camera snap/click rotation, no enemies, stable 10-minute roam. Do not build combat on unproven controls.
+Fresh world → cinematic summoning → free third-person village walk. Validate W/S/A/D camera-relative movement, continuous orbit, wheel zoom, camera collision, visible face, no camera snap/click rotation, no enemies, stable 10-minute roam. Do not build combat on unproven controls.

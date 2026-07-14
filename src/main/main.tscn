@@ -1,6 +1,0 @@
-[gd_scene format=3 uid="uid://xwycde07vf6i"]
-
-[ext_resource type="Script" uid="uid://2484bn1w7t2c" path="res://src/main/main.gd" id="1_3eh75"]
-
-[node name="Lumenfall" type="Node" unique_id=1168883573]
-script = ExtResource("1_3eh75")
