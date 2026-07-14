@@ -29,18 +29,8 @@ static func glass_panel() -> StyleBoxFlat:
 	return _box(Color(0.012, 0.02, 0.03, 0.76), Color(0.89, 0.93, 0.97, 0.42), 1, 2, 22.0, 18.0)
 
 
-static func traveler_row(selected: bool = false) -> StyleBoxFlat:
-	var background := Color(0.025, 0.04, 0.055, 0.7) if selected else Color(0.012, 0.022, 0.032, 0.52)
-	var border := Color(0.76, 0.66, 1.0, 0.92) if selected else Color(0.88, 0.92, 0.96, 0.34)
-	return _box(background, border, 1, 1, 18.0, 12.0)
-
-
 static func action_button(background: Color, border: Color) -> StyleBoxFlat:
 	return _box(background, border, 1, 1, 18.0, 13.0)
-
-
-static func quiet_button() -> StyleBoxFlat:
-	return _box(Color(0.0, 0.0, 0.0, 0.0), Color(0.88, 0.92, 0.96, 0.22), 1, 0, 9.0, 8.0)
 
 
 static func menu_action(background: Color, border: Color) -> StyleBoxFlat:

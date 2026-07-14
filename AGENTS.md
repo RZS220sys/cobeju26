@@ -68,13 +68,12 @@ LUMENFALL: The First Crossing is an established 3D third-person fantasy adventur
 - Establish/update `docs/ART_DIRECTION.md` before broad final-media production. Maintain consistent shape language, palette, materials, lighting, typography, iconography, and cultural references.
 - Media is accepted only after in-game review: correct import/compression, no artifacts, coherent lighting/perspective/materials, readable UI at supported resolutions, accessibility contrast, and acceptable performance.
 - UI implementation should integrate authored assets without baking essential text into images. Keep layout responsive, controls discoverable, and keyboard/controller navigation complete.
+- Use anchors, containers, and normalized width/height ratios for every viewport-dependent position, size, or custom-drawing calculation. Never tune screen-dependent geometry with fixed pixels for one resolution; reserve fixed values for true resolution-independent minima such as a one-pixel hairline.
 
 ## Validation
 
-- After code/assets/scenes change, run `godot --wg check`. It rescans and reports script errors and warnings.
-- Run the full headless suite: `godot --headless --path . --script res://tests/test_runner.gd`.
+- After code, assets, scenes, or tests change, run `scripts/Verify.ps1`. This is the canonical verification entry point; do not launch the live game for routine agent validation.
 - Maintain architecture tests: class/file naming, no global type bucket, bounded composition roots, NPC hierarchy/state, and portable storage.
-- Test the game itself with WGodot—not only unit tests. Exercise input, camera, UI, quest progression, persistence/reload, scene transitions, collisions, debugger output, and representative performance.
 - Do not use WinAPI or PowerShell for screenshots or input automation. Use WGodot's native commands.
 
 ## Tools

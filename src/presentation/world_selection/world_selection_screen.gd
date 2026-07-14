@@ -4,10 +4,25 @@ extends Control
 signal world_selected(state: LumenfallWorldState)
 
 const BACKGROUND_PATH := "res://assets/ui/title_screen/listening_stone_background.png"
+const MENU_LEFT_RATIO := 0.64
+const MENU_TOP_RATIO := 0.48
+const MENU_RIGHT_RATIO := 0.97
+const MENU_BOTTOM_RATIO := 0.94
+const WORLD_LIST_WIDTH_RATIO := 0.9
+const WORLD_LIST_RAISE_RATIO := 0.1
+const MENU_BUTTON_WIDTH_RATIO := 0.4
+const WORLD_ENTRY_HEIGHT_RATIO := 0.18
+const MENU_BUTTON_HEIGHT_RATIO := 0.1
+const MENU_GAP_RATIO := 0.023
+const WORLD_ENTRY_GAP_RATIO := 0.01
 
 var _world_list: VBoxContainer
 var _first_world_button: WorldEntryButton
 var _new_traveler_button: Button
+var _settings_button: Button
+var _quit_button: Button
+var _traveler_menu: Control
+var _traveler_scroll: SmoothScrollContainer
 var _creation_overlay: Control
 var _creation_panel: PanelContainer
 var _name_edit: LineEdit
@@ -54,9 +69,11 @@ func _build_background() -> void:
 func _build_identity() -> void:
 	var identity := VBoxContainer.new()
 	identity.name = "Identity"
-	identity.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	identity.position = Vector2(52.0, 52.0)
-	identity.size = Vector2(410.0, 128.0)
+	identity.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+	identity.anchor_left = 0.035
+	identity.anchor_top = 0.05
+	identity.anchor_right = 0.35
+	identity.anchor_bottom = 0.2
 	identity.add_theme_constant_override(&"separation", 8)
 	add_child(identity)
 	var title := Label.new()
@@ -65,7 +82,8 @@ func _build_identity() -> void:
 	title.add_theme_color_override(&"font_color", Color(0.94, 0.96, 0.98, 0.96))
 	identity.add_child(title)
 	var rule := ColorRect.new()
-	rule.custom_minimum_size = Vector2(340.0, 1.0)
+	rule.custom_minimum_size.y = 1.0
+	rule.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	rule.color = Color(0.92, 0.95, 0.98, 0.56)
 	rule.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	identity.add_child(rule)
@@ -78,58 +96,85 @@ func _build_identity() -> void:
 
 @private
 func _build_traveler_menu() -> void:
-	var menu := VBoxContainer.new()
-	menu.name = "TravelerMenu"
-	menu.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	menu.position = Vector2(-650.0, -490.0)
-	menu.size = Vector2(590.0, 430.0)
-	menu.add_theme_constant_override(&"separation", 10)
-	add_child(menu)
-	_empty_hint = Label.new()
-	_empty_hint.text = "NO TRAVELER HAS CROSSED YET"
-	_empty_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_empty_hint.add_theme_font_size_override(&"font_size", 13)
-	_empty_hint.add_theme_color_override(&"font_color", Color(0.8, 0.84, 0.89, 0.62))
-	menu.add_child(_empty_hint)
-	var scroll := SmoothScrollContainer.new()
-	scroll.name = "TravelerScroll"
-	scroll.custom_minimum_size.y = 228.0
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll.wheel_step = 86.0
-	scroll.response = 15.0
-	menu.add_child(scroll)
+	_traveler_menu = Control.new()
+	_traveler_menu.name = "TravelerMenu"
+	_traveler_menu.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_traveler_menu.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_traveler_menu.resized.connect(_resize_traveler_layout)
+	add_child(_traveler_menu)
+	var menu_width := MENU_RIGHT_RATIO - MENU_LEFT_RATIO
+	var menu_height := MENU_BOTTOM_RATIO - MENU_TOP_RATIO
+	var menu_center := (MENU_LEFT_RATIO + MENU_RIGHT_RATIO) * 0.5
+	var list_half_width := menu_width * WORLD_LIST_WIDTH_RATIO * 0.5
+	var button_half_width := menu_width * MENU_BUTTON_WIDTH_RATIO * 0.5
+	var button_height := menu_height * MENU_BUTTON_HEIGHT_RATIO
+	var button_gap := menu_height * MENU_GAP_RATIO
+	var quit_bottom := MENU_BOTTOM_RATIO
+	var quit_top := quit_bottom - button_height
+	var settings_bottom := quit_top - button_gap
+	var settings_top := settings_bottom - button_height
+	var new_bottom := settings_top - button_gap
+	var new_top := new_bottom - button_height
+	var list_bottom := new_top - button_gap
+	_traveler_scroll = SmoothScrollContainer.new()
+	_traveler_scroll.name = "TravelerScroll"
+	_traveler_scroll.anchor_left = menu_center - list_half_width
+	_traveler_scroll.anchor_top = MENU_TOP_RATIO - WORLD_LIST_RAISE_RATIO
+	_traveler_scroll.anchor_right = menu_center + list_half_width
+	_traveler_scroll.anchor_bottom = list_bottom
+	_traveler_scroll.response = 15.0
+	_traveler_menu.add_child(_traveler_scroll)
 	_world_list = VBoxContainer.new()
 	_world_list.name = "TravelerList"
 	_world_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_world_list.add_theme_constant_override(&"separation", 8)
-	scroll.add_child(_world_list)
-	_new_traveler_button = Button.new()
-	_new_traveler_button.name = "NewTravelerButton"
-	_new_traveler_button.text = "NEW JOURNEY"
-	_new_traveler_button.custom_minimum_size.y = 50.0
-	_new_traveler_button.add_theme_stylebox_override(&"normal", WorldSelectionTheme.menu_action(Color(0.0, 0.0, 0.0, 0.0), Color(0.82, 0.87, 0.92, 0.22)))
-	_new_traveler_button.add_theme_stylebox_override(&"hover", WorldSelectionTheme.menu_action(Color(0.04, 0.05, 0.08, 0.4), Color(0.82, 0.72, 1.0, 0.72)))
-	_new_traveler_button.add_theme_stylebox_override(&"pressed", WorldSelectionTheme.menu_action(Color(0.08, 0.06, 0.12, 0.5), Color(0.82, 0.72, 1.0, 0.92)))
-	_new_traveler_button.pressed.connect(_show_creation)
-	menu.add_child(_new_traveler_button)
-	var secondary := HBoxContainer.new()
-	secondary.alignment = BoxContainer.ALIGNMENT_END
-	secondary.add_theme_constant_override(&"separation", 12)
-	menu.add_child(secondary)
-	_add_quiet_button(secondary, "SETTINGS", _open_settings)
-	_add_quiet_button(secondary, "QUIT", _quit)
+	_traveler_scroll.add_child(_world_list)
+	_empty_hint = Label.new()
+	_empty_hint.text = "NO TRAVELER HAS CROSSED YET"
+	_empty_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_empty_hint.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_empty_hint.anchor_left = menu_center - list_half_width
+	_empty_hint.anchor_top = MENU_TOP_RATIO - WORLD_LIST_RAISE_RATIO
+	_empty_hint.anchor_right = menu_center + list_half_width
+	_empty_hint.anchor_bottom = list_bottom
+	_empty_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_empty_hint.add_theme_font_size_override(&"font_size", 13)
+	_empty_hint.add_theme_color_override(&"font_color", Color(0.8, 0.84, 0.89, 0.62))
+	_traveler_menu.add_child(_empty_hint)
+	_new_traveler_button = _add_menu_button("NewTravelerButton", "NEW JOURNEY", _show_creation, menu_center - button_half_width, new_top, menu_center + button_half_width, new_bottom)
+	_settings_button = _add_menu_button("SettingsButton", "SETTINGS", _open_settings, menu_center - button_half_width, settings_top, menu_center + button_half_width, settings_bottom)
+	_quit_button = _add_menu_button("QuitButton", "QUIT", _quit, menu_center - button_half_width, quit_top, menu_center + button_half_width, quit_bottom)
+	_resize_traveler_layout.call_deferred()
 
 
 @private
-func _add_quiet_button(parent: HBoxContainer, text_value: String, callback: Callable) -> void:
+func _add_menu_button(node_name: String, text_value: String, callback: Callable, left_ratio: float, top_ratio: float, right_ratio: float, bottom_ratio: float) -> Button:
 	var button := Button.new()
-	button.name = text_value.capitalize().replace(" ", "") + "Button"
+	button.name = node_name
 	button.text = text_value
-	button.flat = true
-	button.add_theme_font_size_override(&"font_size", 13)
-	button.add_theme_stylebox_override(&"normal", WorldSelectionTheme.quiet_button())
+	button.anchor_left = left_ratio
+	button.anchor_top = top_ratio
+	button.anchor_right = right_ratio
+	button.anchor_bottom = bottom_ratio
+	button.add_theme_font_size_override(&"font_size", 15)
+	button.add_theme_stylebox_override(&"normal", WorldSelectionTheme.menu_action(Color(0.0, 0.0, 0.0, 0.0), Color(0.82, 0.87, 0.92, 0.22)))
+	button.add_theme_stylebox_override(&"hover", WorldSelectionTheme.menu_action(Color(0.04, 0.05, 0.08, 0.4), Color(0.82, 0.72, 1.0, 0.72)))
+	button.add_theme_stylebox_override(&"pressed", WorldSelectionTheme.menu_action(Color(0.08, 0.06, 0.12, 0.5), Color(0.82, 0.72, 1.0, 0.92)))
 	button.pressed.connect(callback)
-	parent.add_child(button)
+	_traveler_menu.add_child(button)
+	return button
+
+
+@private
+func _resize_traveler_layout() -> void:
+	if not is_instance_valid(_traveler_menu) or not is_instance_valid(_traveler_scroll):
+		return
+	var menu_height := MENU_BOTTOM_RATIO - MENU_TOP_RATIO
+	var entry_height := _traveler_menu.size.y * menu_height * WORLD_ENTRY_HEIGHT_RATIO
+	_world_list.add_theme_constant_override(&"separation", maxi(2, roundi(_traveler_menu.size.y * WORLD_ENTRY_GAP_RATIO)))
+	_traveler_scroll.wheel_step = entry_height * 1.05
+	for child: Node in _world_list.get_children():
+		if child is WorldEntryButton:
+			(child as WorldEntryButton).custom_minimum_size.y = entry_height
 
 
 @private
@@ -146,9 +191,10 @@ func _build_creation_overlay() -> void:
 	_creation_overlay.add_child(veil)
 	_creation_panel = PanelContainer.new()
 	_creation_panel.name = "CreateTraveler"
-	_creation_panel.set_anchors_preset(Control.PRESET_CENTER)
-	_creation_panel.position = Vector2(-300.0, -150.0)
-	_creation_panel.size = Vector2(600.0, 300.0)
+	_creation_panel.anchor_left = 0.34
+	_creation_panel.anchor_top = 0.3
+	_creation_panel.anchor_right = 0.66
+	_creation_panel.anchor_bottom = 0.7
 	_creation_panel.add_theme_stylebox_override(&"panel", WorldSelectionTheme.glass_panel())
 	_creation_overlay.add_child(_creation_panel)
 	var column := VBoxContainer.new()
@@ -212,6 +258,7 @@ func _add_world_row(summary: LumenfallWorldSummary) -> void:
 	entry.configure(summary, "%s PLAYED" % _format_time(summary.played_seconds))
 	entry.pressed.connect(_load_world.bind(summary.world_id))
 	_world_list.add_child(entry)
+	entry.custom_minimum_size.y = _traveler_menu.size.y * (MENU_BOTTOM_RATIO - MENU_TOP_RATIO) * WORLD_ENTRY_HEIGHT_RATIO
 	if not is_instance_valid(_first_world_button):
 		_first_world_button = entry
 
