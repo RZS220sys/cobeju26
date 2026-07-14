@@ -3,7 +3,9 @@ extends RefCounted
 
 
 static func list_worlds() -> LumenfallWorldIndex:
-	return WorldIndexRepository.load_index()
+	var index := WorldIndexRepository.load_index()
+	index.worlds.sort_custom(_recent_world_first)
+	return index
 
 
 static func create_world(display_name: String) -> LumenfallWorldState:
@@ -69,6 +71,17 @@ static func _clean_name(display_name: String) -> String:
 	if cleaned.is_empty():
 		cleaned = "Wayfarer"
 	return cleaned.left(24)
+
+
+@private
+static func _recent_world_first(left: LumenfallWorldSummary, right: LumenfallWorldSummary) -> bool:
+	if not is_instance_valid(left):
+		return false
+	if not is_instance_valid(right):
+		return true
+	if left.last_played_unix != right.last_played_unix:
+		return left.last_played_unix > right.last_played_unix
+	return left.world_id > right.world_id
 
 
 @private

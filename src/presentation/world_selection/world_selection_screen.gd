@@ -1,29 +1,18 @@
 class_name WorldSelectionScreen
 extends Control
 
-enum WorldAction {
-	NONE,
-	RESET,
-	DELETE,
-}
-
 signal world_selected(state: LumenfallWorldState)
 
 const BACKGROUND_PATH := "res://assets/ui/title_screen/listening_stone_background.png"
 
 var _world_list: VBoxContainer
-var _world_buttons: Dictionary[String, Button] = {}
-var _traveler_button_group: ButtonGroup
-var _continue_button: Button
+var _first_world_button: WorldEntryButton
+var _new_traveler_button: Button
 var _creation_overlay: Control
 var _creation_panel: PanelContainer
 var _name_edit: LineEdit
 var _empty_hint: Label
-var _confirm_dialog: ConfirmationDialog
 var _settings_panel: SettingsPanel
-var _selected_world_id: String = ""
-var _pending_world_id: String = ""
-var _pending_action: WorldAction = WorldAction.NONE
 
 
 @override
@@ -41,12 +30,6 @@ func _build_interface() -> void:
 	_build_identity()
 	_build_traveler_menu()
 	_build_creation_overlay()
-	_confirm_dialog = ConfirmationDialog.new()
-	_confirm_dialog.name = "WorldActionConfirmation"
-	_confirm_dialog.title = "CONFIRM"
-	_confirm_dialog.min_size = Vector2i(560, 240)
-	_confirm_dialog.confirmed.connect(_confirm_world_action)
-	add_child(_confirm_dialog)
 
 
 @private
@@ -98,8 +81,8 @@ func _build_traveler_menu() -> void:
 	var menu := VBoxContainer.new()
 	menu.name = "TravelerMenu"
 	menu.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	menu.position = Vector2(-500.0, -430.0)
-	menu.size = Vector2(450.0, 380.0)
+	menu.position = Vector2(-650.0, -490.0)
+	menu.size = Vector2(590.0, 430.0)
 	menu.add_theme_constant_override(&"separation", 10)
 	add_child(menu)
 	_empty_hint = Label.new()
@@ -108,30 +91,27 @@ func _build_traveler_menu() -> void:
 	_empty_hint.add_theme_font_size_override(&"font_size", 13)
 	_empty_hint.add_theme_color_override(&"font_color", Color(0.8, 0.84, 0.89, 0.62))
 	menu.add_child(_empty_hint)
-	var scroll := ScrollContainer.new()
+	var scroll := SmoothScrollContainer.new()
 	scroll.name = "TravelerScroll"
-	scroll.custom_minimum_size.y = 118.0
+	scroll.custom_minimum_size.y = 228.0
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.wheel_step = 86.0
+	scroll.response = 15.0
 	menu.add_child(scroll)
 	_world_list = VBoxContainer.new()
 	_world_list.name = "TravelerList"
 	_world_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_world_list.add_theme_constant_override(&"separation", 8)
 	scroll.add_child(_world_list)
-	_continue_button = Button.new()
-	_continue_button.name = "ContinueButton"
-	_continue_button.text = "CONTINUE"
-	_continue_button.custom_minimum_size.y = 54.0
-	_continue_button.disabled = true
-	_continue_button.pressed.connect(_continue_selected)
-	menu.add_child(_continue_button)
-	var new_button := Button.new()
-	new_button.name = "NewTravelerButton"
-	new_button.text = "NEW JOURNEY"
-	new_button.custom_minimum_size.y = 48.0
-	new_button.pressed.connect(_show_creation)
-	menu.add_child(new_button)
+	_new_traveler_button = Button.new()
+	_new_traveler_button.name = "NewTravelerButton"
+	_new_traveler_button.text = "NEW JOURNEY"
+	_new_traveler_button.custom_minimum_size.y = 50.0
+	_new_traveler_button.add_theme_stylebox_override(&"normal", WorldSelectionTheme.menu_action(Color(0.0, 0.0, 0.0, 0.0), Color(0.82, 0.87, 0.92, 0.22)))
+	_new_traveler_button.add_theme_stylebox_override(&"hover", WorldSelectionTheme.menu_action(Color(0.04, 0.05, 0.08, 0.4), Color(0.82, 0.72, 1.0, 0.72)))
+	_new_traveler_button.add_theme_stylebox_override(&"pressed", WorldSelectionTheme.menu_action(Color(0.08, 0.06, 0.12, 0.5), Color(0.82, 0.72, 1.0, 0.92)))
+	_new_traveler_button.pressed.connect(_show_creation)
+	menu.add_child(_new_traveler_button)
 	var secondary := HBoxContainer.new()
 	secondary.alignment = BoxContainer.ALIGNMENT_END
 	secondary.add_theme_constant_override(&"separation", 12)
@@ -212,82 +192,28 @@ func _build_creation_overlay() -> void:
 func _refresh_worlds() -> void:
 	for child: Node in _world_list.get_children():
 		child.queue_free()
-	_world_buttons.clear()
-	_selected_world_id = ""
-	_continue_button.disabled = true
-	_traveler_button_group = ButtonGroup.new()
-	_traveler_button_group.allow_unpress = false
+	_first_world_button = null
 	var index := WorldLibrary.list_worlds()
 	_empty_hint.visible = index.worlds.is_empty()
-	var first_world_id := ""
 	for summary: LumenfallWorldSummary in index.worlds:
 		if not is_instance_valid(summary):
 			continue
-		if first_world_id.is_empty():
-			first_world_id = summary.world_id
 		_add_world_row(summary)
-	if first_world_id.is_empty():
+	if not is_instance_valid(_first_world_button):
 		_show_creation.call_deferred()
 	else:
-		_select_world(first_world_id)
-		_continue_button.grab_focus.call_deferred()
+		_first_world_button.grab_focus.call_deferred()
 
 
 @private
 func _add_world_row(summary: LumenfallWorldSummary) -> void:
-	var row := HBoxContainer.new()
-	row.name = "Traveler_%s" % summary.world_id
-	row.add_theme_constant_override(&"separation", 6)
-	_world_list.add_child(row)
-	var select_button := Button.new()
-	select_button.name = "Load_%s" % summary.world_id
-	select_button.text = "%s\nCHAPTER %d  ·  %s PLAYED" % [summary.display_name.to_upper(), summary.quest_stage + 1, _format_time(summary.played_seconds).to_upper()]
-	select_button.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	select_button.toggle_mode = true
-	select_button.button_group = _traveler_button_group
-	select_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	select_button.custom_minimum_size.y = 68.0
-	select_button.add_theme_font_size_override(&"font_size", 15)
-	select_button.add_theme_stylebox_override(&"normal", WorldSelectionTheme.traveler_row())
-	select_button.add_theme_stylebox_override(&"hover", WorldSelectionTheme.traveler_row(true))
-	select_button.add_theme_stylebox_override(&"pressed", WorldSelectionTheme.traveler_row(true))
-	select_button.add_theme_stylebox_override(&"focus", WorldSelectionTheme.focus_outline())
-	select_button.pressed.connect(_select_world.bind(summary.world_id))
-	row.add_child(select_button)
-	_world_buttons[summary.world_id] = select_button
-	var reset_button := Button.new()
-	reset_button.name = "Reset_%s" % summary.world_id
-	reset_button.text = "↺"
-	reset_button.tooltip_text = "Begin this traveler again"
-	reset_button.custom_minimum_size = Vector2(42.0, 68.0)
-	reset_button.add_theme_stylebox_override(&"normal", WorldSelectionTheme.quiet_button())
-	reset_button.pressed.connect(_reset_world.bind(summary.world_id))
-	row.add_child(reset_button)
-	var delete_button := Button.new()
-	delete_button.name = "Delete_%s" % summary.world_id
-	delete_button.text = "×"
-	delete_button.tooltip_text = "Remove this traveler"
-	delete_button.custom_minimum_size = Vector2(42.0, 68.0)
-	delete_button.add_theme_stylebox_override(&"normal", WorldSelectionTheme.quiet_button())
-	delete_button.pressed.connect(_delete_world.bind(summary.world_id))
-	row.add_child(delete_button)
-
-
-@private
-func _select_world(world_id: String) -> void:
-	if not _world_buttons.has(world_id):
-		return
-	_selected_world_id = world_id
-	_continue_button.disabled = false
-	var selected_button := _world_buttons[world_id]
-	selected_button.button_pressed = true
-
-
-@private
-func _continue_selected() -> void:
-	if _selected_world_id.is_empty():
-		return
-	_load_world(_selected_world_id)
+	var entry := WorldEntryButton.new()
+	entry.name = "Load_%s" % summary.world_id
+	entry.configure(summary, "%s PLAYED" % _format_time(summary.played_seconds))
+	entry.pressed.connect(_load_world.bind(summary.world_id))
+	_world_list.add_child(entry)
+	if not is_instance_valid(_first_world_button):
+		_first_world_button = entry
 
 
 @private
@@ -300,7 +226,10 @@ func _show_creation() -> void:
 @private
 func _hide_creation() -> void:
 	_creation_overlay.visible = false
-	_continue_button.grab_focus.call_deferred()
+	if is_instance_valid(_first_world_button):
+		_first_world_button.grab_focus.call_deferred()
+	else:
+		_new_traveler_button.grab_focus.call_deferred()
 
 
 @private
@@ -314,37 +243,6 @@ func _load_world(world_id: String) -> void:
 	var state := WorldLibrary.load_world(world_id)
 	if is_instance_valid(state):
 		world_selected.emit(state)
-
-
-@private
-func _reset_world(world_id: String) -> void:
-	_pending_world_id = world_id
-	_pending_action = WorldAction.RESET
-	_confirm_dialog.dialog_text = "Begin this traveler's story again? Their progress, belongings, and choices will be replaced."
-	_confirm_dialog.ok_button_text = "BEGIN AGAIN"
-	_confirm_dialog.popup_centered()
-
-
-@private
-func _delete_world(world_id: String) -> void:
-	_pending_world_id = world_id
-	_pending_action = WorldAction.DELETE
-	_confirm_dialog.dialog_text = "Remove this traveler and their world? This cannot be undone."
-	_confirm_dialog.ok_button_text = "REMOVE TRAVELER"
-	_confirm_dialog.popup_centered()
-
-
-@private
-func _confirm_world_action() -> void:
-	if _pending_world_id.is_empty():
-		return
-	if _pending_action == WorldAction.RESET:
-		WorldLibrary.reset_world(_pending_world_id)
-	elif _pending_action == WorldAction.DELETE:
-		WorldLibrary.delete_world(_pending_world_id)
-	_pending_world_id = ""
-	_pending_action = WorldAction.NONE
-	_refresh_worlds()
 
 
 @private

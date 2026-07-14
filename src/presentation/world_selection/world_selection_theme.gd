@@ -43,6 +43,13 @@ static func quiet_button() -> StyleBoxFlat:
 	return _box(Color(0.0, 0.0, 0.0, 0.0), Color(0.88, 0.92, 0.96, 0.22), 1, 0, 9.0, 8.0)
 
 
+static func menu_action(background: Color, border: Color) -> StyleBoxFlat:
+	var style := _box(background, border, 0, 0, 16.0, 13.0)
+	style.border_width_top = 1
+	style.border_width_bottom = 1
+	return style
+
+
 static func focus_outline() -> StyleBoxFlat:
 	return _box(Color(0.08, 0.07, 0.13, 0.28), Color(0.79, 0.69, 1.0, 0.92), 1, 1, 18.0, 13.0)
 
