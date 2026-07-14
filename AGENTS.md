@@ -1,75 +1,97 @@
-# Agents Guide
+# LUMENFALL Agent Guide
 
-Imagine you want to create a game with the main goal of production.
-After completing the game, you will be selling it yourself in Steam or other shops.
+LUMENFALL: The First Crossing is an established 3D third-person fantasy adventure intended for commercial release. Continue the existing game; do not restart, replace its identity, or invent a different project without explicit direction.
 
-This project (cobeju26) is about such a game. Rules:
+## Sources of truth
 
-  - Topic, mode and details of the game are all decided by you.
-  - The game **MUST** be production ready, bugfree and tested.
-  - You will be provided with the tools to properly debug and test the game.
-  - The game **MUST** have proper assets and mechanisms.
-  - The game must be 3D and have proper and easy to navigate user UI.
-  - Documenting is important, but don't over-document. because you will be wasting too much tokens writing and (then later) reading them. Only document what's important. things such as goals, architecture, bugs, etc. and make sure they are extremely summerized and compressed, since you are the one who is going to read them later. Don't waste your tokens on proper English grammar in docs; being short and understandable for yourself is what's important.
-  - Keep the project properly structured. Avoid adding thousands of lines of code to a single file. Prefer using `class_name` because that will make it easier to discover classes, etc. Avoid naming your classes same name as builtin godot stuff.
-  - Make sure the game mechanism, lores and story is actually enjoyable by the users. For the most strictest players, you have to keep them happy/entertained for at least 2 hours. For the normal players, at least days. And for the players who become the game's fans, you should make sure the game has the potential to properly be expanded by future updates, add new mechanisms, features, etc. Be creative and fun, but most importantly: **meaningful**. Perhaps the game can have lots of psychological aspects, lessons, conclusions, etc. so it's not meaningless to play it.
-  - You do **NOT** have to constantly report back to the user. As you will be on your own and work on the project on your own. This will be your own project.
-  - Keep pursuing a single goal. Don't constantly change your final goal, etc. Have persistency. The game must be production-ready AND playable. DO NOT BE LAZY.
+- `docs/STATUS.md`: implemented state, validation, next work.
+- `docs/REDESIGN.md`: product pillars, audience, game loop, UX.
+- `docs/ARCHITECTURE.md`: dependency boundaries and current structure.
+- `docs/STORY.md`: narrative canon, implemented chapters, open mysteries.
+- Keep docs short and current. Record decisions, architecture, canon, blockers, and validation—not routine implementation detail.
 
+## Product bar
+
+- The result must be production-ready, stable, tested, 3D, and easy to navigate.
+- Preserve the meaningful core: exploration, repair, memory, relationships, consequence, and a world capable of years of expansion.
+- Build enough mechanical and narrative depth for at least two strong hours for demanding players and continued play for the target audience.
+- Keep pursuing the existing goal until the playable product is genuinely finished. A pretty prototype is not completion.
+
+## Engineering rules
+
+### Structure and responsibility
+
+- Follow SOLID boundaries. Organize by layer and category using nested folders; never turn `src/core`, `src/world`, or another broad folder into a flat dumping ground.
+- Keep dependency direction described in `docs/ARCHITECTURE.md`. Domain code must not depend on scenes, UI, or persistence.
+- Every file and class has one bounded responsibility. Split a class before it becomes a god object.
+- A world scene/script is a composition root: create and connect focused systems. It must not own player control, quest policy, UI flows, NPC behavior, navigation rules, persistence details, or workshop logic.
+- Use focused names such as `Catalog`, `Repository`, `Coordinator`, `Controller`, `Builder`, and `Factory` only when that role is accurate. Do not add meaningless prefixes/suffixes such as `Adventure`, `Class`, or generic `Manager`.
+- `class_name` is preferred and must match its snake_case filename (`QuestCatalog` -> `quest_catalog.gd`). Avoid names that collide with Godot built-ins.
+- Eliminate duplicated behavior. Use inheritance for a genuine, stable *is-a* relationship; use composition and focused services for capabilities and orchestration.
+- Keep APIs statically typed. Constants are for real primitive constants, not aliases for scripts. Use discoverable `class_name` types instead of script preloads.
+
+### Enums and domain policy
+
+- Never hardcode gameplay states, identifiers, choices, layers, or stages as magic strings/integers.
+- Put each enum in the smallest responsible domain catalog/class. Do not create a global `Types`, `Enums`, or miscellaneous bucket.
+- The owner of an enum also owns its closely related metadata and policy (labels, navigation target, validation, transitions) when appropriate. Presentation/world classes must not duplicate `match` tables for domain policy.
+- Keep unrelated concepts separate even when each currently contains only a few values. Scale is achieved through boundaries, not one enormous convenience file.
+
+### NPC architecture
+
+- Preserve the hierarchy: `NpcActor` -> `HumanoidNpc`; `NpcActor` -> `AnimalNpc` -> `BeastNpc`, with concrete species/characters beneath them.
+- Every named NPC gets its own class and file in a categorized folder. The concrete NPC owns its distinctive routine, decisions, reactions, and emotional behavior; shared mechanics remain in a valid base class/service.
+- Register NPC identity and construction through bounded catalogs/factories. Do not centralize every character's behavior in the world or one NPC switchboard.
+- Persist each NPC independently: mood, behavior, trust/fear/hope, position, relationships, choices, and important events. NPC state must support continuity and future simulation rather than cosmetic wandering.
+
+### Persistence
+
+- CCL binary is the persistence format. Never manually edit generated code and never name schema models/fields after Godot built-ins.
+- Storage layout is portable by world:
+
+  ```text
+  user://game_data/index.cclbin
+  user://game_data/<world_id>/world.cclbin
+  user://game_data/<world_id>/npcs/<npc_id>.cclbin
+  ```
+
+- A `<world_id>` directory is the backup/share unit. Keep world-owned data inside it and use repositories plus atomic writes.
+- The game is unreleased. Do not add migration shims or preserve obsolete development saves. Regenerate schemas and delete local test data when a breaking model change requires it. Define a compatibility policy before release.
+- `#[StrictBinaryParsing(false)]` may remain where required by the CCL generator, but it is not permission to accumulate legacy compatibility code.
+
+## Media and art policy
+
+- Procedural geometry, code-drawn UI, primitives, and generated Blender blockouts are for prototyping, debugging, layout, and system validation. Clearly label placeholders; do not call them production art.
+- Use GPT Image/image generation for authored production bitmap media where suitable: UI ornament, icons, illustrations, textures, loading art, key art, and concept exploration. Work from a coherent art brief, iterate deliberately, and reject visible AI artifacts or inconsistent style.
+- Final 3D characters, creatures, props, environments, animation, and other specialist assets should come from the user's artists/friends or properly licensed asset stores. Blender remains useful for blockout, cleanup, rigging, optimization, collision, baking, and integration; scripted primitive models are not the default final-art pipeline.
+- Never download or ship an asset without verified commercial rights. Track creator/source, license, permitted modifications, and required attribution in an asset manifest/third-party notice.
+- Establish/update `docs/ART_DIRECTION.md` before broad final-media production. Maintain consistent shape language, palette, materials, lighting, typography, iconography, and cultural references.
+- Media is accepted only after in-game review: correct import/compression, no artifacts, coherent lighting/perspective/materials, readable UI at supported resolutions, accessibility contrast, and acceptable performance.
+- UI implementation should integrate authored assets without baking essential text into images. Keep layout responsive, controls discoverable, and keyboard/controller navigation complete.
+
+## Validation
+
+- After code/assets/scenes change, run `godot --wg check`. It rescans and reports script errors and warnings.
+- Run the full headless suite: `godot --headless --path . --script res://tests/test_runner.gd`.
+- Maintain architecture tests: class/file naming, no global type bucket, bounded composition roots, NPC hierarchy/state, and portable storage.
+- Test the game itself with WGodot—not only unit tests. Exercise input, camera, UI, quest progression, persistence/reload, scene transitions, collisions, debugger output, and representative performance.
+- Do not use WinAPI or PowerShell for screenshots or input automation. Use WGodot's native commands.
 
 ## Tools
 
 ### WGodot
 
-This is my own custom Godot fork that has lots of extra features on top of the latest Godot features.
-For its features, check [features.md](./skills/wgodot-cli/features.md) file.
-For the full agent skill, check [wgodot-cli skill](./skills\wgodot-cli\SKILL.md).
-
-After adding new files, assets, code, etc, you do **not** need to scan every single files individually or run normal godot re-import commands. this command is your best friend:
-`godot --wg check`
-it automatically re-scans, checks for errors, warnings, etc.
-If you see this message: `wgodot: No running WGodot editor was found for this project.`; then just simply launch the `project.godot` file at the root of this repo in the background. if godot hangs or becomes unresponsive, you can kill it and launch it again.
-You really don't need to read the source code of my fork, but if it's truly required: `E:\woto\programming\cpp\wgodot`.
-If you found a bug in its C++ source code, feel free to fix, stop background godot process (important!), then call its `./build_godot.ps1` script (it builds editor, and the `godot` command in my path is automatically calling that), and then open it up again (you don't needs its templates now because you are not trying to export it).
-
-You are prohibited from using winapi/powershell for screenshot, user input, etc. Use the wgodot's native commands, they are far more efficient.
-
-You are allowed to change the project's settings in the `project.godot` to your liking to make it fit the game style that you want to create. it's all up to you.
-
-Prefer using GDScript as much as possible, as it's going to be much easier to debug, put breakpoints, etc. Don't do dumb shit like this:
-
-```gd
-const SomeType = preload(res://some/path/some_type.gd)
-```
-
-Prefer using `class_name`; and while you are using that, then you no longer need to do these stuff.
-Keep constants to **real** primitive constant values, because WGodot has de-const feature for its export.
+- Read `skills/wgodot-cli/SKILL.md` completely before using WGodot; reference `skills/wgodot-cli/features.md` as routed by the skill.
+- If `godot --wg check` reports no running editor, launch this repository's `project.godot` in the background. If the editor is unresponsive, restart it.
+- WGodot source is at `E:\woto\programming\cpp\wgodot` only if a fork bug truly requires investigation. Stop the editor before running its `build_godot.ps1`, then relaunch.
 
 ### CCL
 
-For data serialization and deserialization, use CCL. it's an alternative to protobuf, but it's so much easier and has 0 runtime deps.
+- Existing reference project: `E:\woto\projects\DarkSurvivors\ccl\api_types\definitions.ccl`.
+- Generator architecture reference: `E:\woto\projects\DarkSurvivors\scripts\GenerateApiTypes.ps1`.
+- Prefer binary serialization to avoid WGodot strict-typing ambiguity.
 
-Examples from my previous projects:
+### Blender and image generation
 
-E:\woto\projects\DarkSurvivors\ccl\api_types\definitions.ccl
-
-generating stuff:
-
-E:\woto\projects\DarkSurvivors\scripts\GenerateApiTypes.ps1
-
-You can follow a similar architecture here as well. In that place, I used it for stuff like API requests, etc. but it can also be used for player data storage, world data storage, etc etc. use the binary serialization to not get errors about strict type checking in wgodot.
-
-For serialization version compatibility (basically when you update the schema): use `#[StrictBinaryParsing(false)]`; and always add new fields to the last. this way, when the new version of the parser wants to read the old data, it will still return a valid result with old data (greedy algorithm, take as much as is valid).
-
-Avoid naming your models or fields same name as builtin godot stuff, that will get conflicts. also avoid **manually** editing auto-generated source code, as your changes will be overwritten later and hence wasted.
-
-### Blender
-
-Blender v5.1.1 is installed on this machine, feel free to use it for assets and stuff (you can use its Python API, write/run Python scripts, etc).
-
-
-### Image gen
-
-You are allowed to use your built-in image gen tool/skill as much as possible. For generating textures, etc. Just make sure they are not slop-looking and are actually suitable for a production-ready game. 
-
-
+- Blender 5.1.1 is installed for the scoped production tasks described above.
+- Use the built-in image-generation skill for bitmap creation/editing. Inspect results at gameplay size and in context; generation alone is not acceptance.

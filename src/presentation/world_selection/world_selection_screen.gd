@@ -9,11 +9,19 @@ enum WorldAction {
 
 signal world_selected(state: LumenfallWorldState)
 
+const BACKGROUND_PATH := "res://assets/ui/title_screen/listening_stone_background.png"
+
 var _world_list: VBoxContainer
+var _world_buttons: Dictionary[String, Button] = {}
+var _traveler_button_group: ButtonGroup
+var _continue_button: Button
+var _creation_overlay: Control
 var _creation_panel: PanelContainer
 var _name_edit: LineEdit
 var _empty_hint: Label
 var _confirm_dialog: ConfirmationDialog
+var _settings_panel: SettingsPanel
+var _selected_world_id: String = ""
 var _pending_world_id: String = ""
 var _pending_action: WorldAction = WorldAction.NONE
 
@@ -21,117 +29,162 @@ var _pending_action: WorldAction = WorldAction.NONE
 @override
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	theme = LumenfallUiTheme.create()
+	theme = WorldSelectionTheme.create()
 	_build_interface()
 	_refresh_worlds()
+	_animate_entrance()
 
 
 @private
 func _build_interface() -> void:
-	var background := ColorRect.new()
-	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	background.color = Color("0a201b")
-	add_child(background)
-	var sun := Polygon2D.new()
-	sun.polygon = PackedVector2Array([Vector2(0, 0), Vector2(360, 0), Vector2(360, 360), Vector2(0, 360)])
-	sun.position = Vector2(80, 80)
-	sun.color = Color(0.94, 0.58, 0.19, 0.18)
-	background.add_child(sun)
-	var margin := MarginContainer.new()
-	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	margin.add_theme_constant_override(&"margin_left", 70)
-	margin.add_theme_constant_override(&"margin_right", 70)
-	margin.add_theme_constant_override(&"margin_top", 55)
-	margin.add_theme_constant_override(&"margin_bottom", 50)
-	add_child(margin)
-	var layout := HBoxContainer.new()
-	layout.add_theme_constant_override(&"separation", 42)
-	margin.add_child(layout)
-	var identity := VBoxContainer.new()
-	identity.custom_minimum_size.x = 540.0
-	identity.alignment = BoxContainer.ALIGNMENT_CENTER
-	identity.add_theme_constant_override(&"separation", 14)
-	layout.add_child(identity)
-	var mark := Label.new()
-	mark.text = "✦  ◇  ✦"
-	mark.add_theme_font_size_override(&"font_size", 42)
-	mark.add_theme_color_override(&"font_color", Color("edbd5e"))
-	identity.add_child(mark)
-	var title := Label.new()
-	title.text = "LUMENFALL"
-	title.add_theme_font_size_override(&"font_size", 65)
-	title.add_theme_color_override(&"font_color", Color("ffd477"))
-	identity.add_child(title)
-	var subtitle := Label.new()
-	subtitle.text = "THE FIRST CROSSING"
-	subtitle.add_theme_font_size_override(&"font_size", 23)
-	subtitle.add_theme_color_override(&"font_color", Color("b7dbc2"))
-	identity.add_child(subtitle)
-	var pitch := Label.new()
-	pitch.text = "Choose a traveler. Each journey keeps its own world, choices, and friendships."
-	pitch.custom_minimum_size.x = 500.0
-	pitch.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	pitch.add_theme_font_size_override(&"font_size", 18)
-	pitch.add_theme_color_override(&"font_color", Color("dfd2ae"))
-	identity.add_child(pitch)
-
-	var book := PanelContainer.new()
-	book.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	book.add_theme_stylebox_override(&"panel", LumenfallUiTheme.panel())
-	layout.add_child(book)
-	var book_column := VBoxContainer.new()
-	book_column.add_theme_constant_override(&"separation", 14)
-	book.add_child(book_column)
-	var book_title := Label.new()
-	book_title.text = "TRAVELER BOOK"
-	book_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	book_title.add_theme_font_size_override(&"font_size", 30)
-	book_title.add_theme_color_override(&"font_color", Color("ffd477"))
-	book_column.add_child(book_title)
-	_empty_hint = Label.new()
-	_empty_hint.text = "No traveler has crossed yet. Name the first."
-	_empty_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_empty_hint.add_theme_color_override(&"font_color", Color("c6b98e"))
-	book_column.add_child(_empty_hint)
-	var scroll := ScrollContainer.new()
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	book_column.add_child(scroll)
-	_world_list = VBoxContainer.new()
-	_world_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_world_list.add_theme_constant_override(&"separation", 10)
-	scroll.add_child(_world_list)
-	var new_button := Button.new()
-	new_button.name = "NewTravelerButton"
-	new_button.text = "✦  NAME A NEW TRAVELER"
-	new_button.custom_minimum_size.y = 58.0
-	new_button.pressed.connect(_show_creation)
-	book_column.add_child(new_button)
-	_creation_panel = _build_creation_panel()
-	add_child(_creation_panel)
+	_build_background()
+	_build_identity()
+	_build_traveler_menu()
+	_build_creation_overlay()
 	_confirm_dialog = ConfirmationDialog.new()
-	_confirm_dialog.title = "TRAVELER BOOK"
+	_confirm_dialog.name = "WorldActionConfirmation"
+	_confirm_dialog.title = "CONFIRM"
 	_confirm_dialog.min_size = Vector2i(560, 240)
 	_confirm_dialog.confirmed.connect(_confirm_world_action)
 	add_child(_confirm_dialog)
 
 
 @private
-func _build_creation_panel() -> PanelContainer:
-	var panel := PanelContainer.new()
-	panel.name = "CreateTraveler"
-	panel.set_anchors_preset(Control.PRESET_CENTER)
-	panel.position = Vector2(-310.0, -160.0)
-	panel.size = Vector2(620.0, 320.0)
-	panel.add_theme_stylebox_override(&"panel", LumenfallUiTheme.panel())
-	panel.visible = false
+func _build_background() -> void:
+	var background := TextureRect.new()
+	background.name = "ListeningStoneBackground"
+	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	background.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	background.texture = ResourceLoader.load(BACKGROUND_PATH, "Texture2D") as Texture2D
+	add_child(background)
+	var atmosphere := ColorRect.new()
+	atmosphere.name = "Atmosphere"
+	atmosphere.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	atmosphere.color = Color(0.0, 0.01, 0.02, 0.08)
+	atmosphere.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(atmosphere)
+
+
+@private
+func _build_identity() -> void:
+	var identity := VBoxContainer.new()
+	identity.name = "Identity"
+	identity.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	identity.position = Vector2(52.0, 52.0)
+	identity.size = Vector2(410.0, 128.0)
+	identity.add_theme_constant_override(&"separation", 8)
+	add_child(identity)
+	var title := Label.new()
+	title.text = "LUMENFALL"
+	title.add_theme_font_size_override(&"font_size", 42)
+	title.add_theme_color_override(&"font_color", Color(0.94, 0.96, 0.98, 0.96))
+	identity.add_child(title)
+	var rule := ColorRect.new()
+	rule.custom_minimum_size = Vector2(340.0, 1.0)
+	rule.color = Color(0.92, 0.95, 0.98, 0.56)
+	rule.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	identity.add_child(rule)
+	var subtitle := Label.new()
+	subtitle.text = "T H E   F I R S T   C R O S S I N G"
+	subtitle.add_theme_font_size_override(&"font_size", 14)
+	subtitle.add_theme_color_override(&"font_color", Color(0.86, 0.89, 0.93, 0.86))
+	identity.add_child(subtitle)
+
+
+@private
+func _build_traveler_menu() -> void:
+	var menu := VBoxContainer.new()
+	menu.name = "TravelerMenu"
+	menu.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	menu.position = Vector2(-500.0, -430.0)
+	menu.size = Vector2(450.0, 380.0)
+	menu.add_theme_constant_override(&"separation", 10)
+	add_child(menu)
+	_empty_hint = Label.new()
+	_empty_hint.text = "NO TRAVELER HAS CROSSED YET"
+	_empty_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_empty_hint.add_theme_font_size_override(&"font_size", 13)
+	_empty_hint.add_theme_color_override(&"font_color", Color(0.8, 0.84, 0.89, 0.62))
+	menu.add_child(_empty_hint)
+	var scroll := ScrollContainer.new()
+	scroll.name = "TravelerScroll"
+	scroll.custom_minimum_size.y = 118.0
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	menu.add_child(scroll)
+	_world_list = VBoxContainer.new()
+	_world_list.name = "TravelerList"
+	_world_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_world_list.add_theme_constant_override(&"separation", 8)
+	scroll.add_child(_world_list)
+	_continue_button = Button.new()
+	_continue_button.name = "ContinueButton"
+	_continue_button.text = "CONTINUE"
+	_continue_button.custom_minimum_size.y = 54.0
+	_continue_button.disabled = true
+	_continue_button.pressed.connect(_continue_selected)
+	menu.add_child(_continue_button)
+	var new_button := Button.new()
+	new_button.name = "NewTravelerButton"
+	new_button.text = "NEW JOURNEY"
+	new_button.custom_minimum_size.y = 48.0
+	new_button.pressed.connect(_show_creation)
+	menu.add_child(new_button)
+	var secondary := HBoxContainer.new()
+	secondary.alignment = BoxContainer.ALIGNMENT_END
+	secondary.add_theme_constant_override(&"separation", 12)
+	menu.add_child(secondary)
+	_add_quiet_button(secondary, "SETTINGS", _open_settings)
+	_add_quiet_button(secondary, "QUIT", _quit)
+
+
+@private
+func _add_quiet_button(parent: HBoxContainer, text_value: String, callback: Callable) -> void:
+	var button := Button.new()
+	button.name = text_value.capitalize().replace(" ", "") + "Button"
+	button.text = text_value
+	button.flat = true
+	button.add_theme_font_size_override(&"font_size", 13)
+	button.add_theme_stylebox_override(&"normal", WorldSelectionTheme.quiet_button())
+	button.pressed.connect(callback)
+	parent.add_child(button)
+
+
+@private
+func _build_creation_overlay() -> void:
+	_creation_overlay = Control.new()
+	_creation_overlay.name = "CreationOverlay"
+	_creation_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_creation_overlay.visible = false
+	add_child(_creation_overlay)
+	var veil := ColorRect.new()
+	veil.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	veil.color = Color(0.0, 0.008, 0.015, 0.78)
+	veil.mouse_filter = Control.MOUSE_FILTER_STOP
+	_creation_overlay.add_child(veil)
+	_creation_panel = PanelContainer.new()
+	_creation_panel.name = "CreateTraveler"
+	_creation_panel.set_anchors_preset(Control.PRESET_CENTER)
+	_creation_panel.position = Vector2(-300.0, -150.0)
+	_creation_panel.size = Vector2(600.0, 300.0)
+	_creation_panel.add_theme_stylebox_override(&"panel", WorldSelectionTheme.glass_panel())
+	_creation_overlay.add_child(_creation_panel)
 	var column := VBoxContainer.new()
 	column.add_theme_constant_override(&"separation", 18)
-	panel.add_child(column)
+	_creation_panel.add_child(column)
 	var heading := Label.new()
 	heading.text = "WHO CROSSES THE FALLING STAR?"
 	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	heading.add_theme_font_size_override(&"font_size", 25)
+	heading.add_theme_font_size_override(&"font_size", 22)
 	column.add_child(heading)
+	var note := Label.new()
+	note.text = "Name a traveler. Their world, choices, and relationships will remain their own."
+	note.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	note.add_theme_color_override(&"font_color", Color(0.79, 0.83, 0.88, 0.72))
+	column.add_child(note)
 	_name_edit = LineEdit.new()
 	_name_edit.name = "TravelerName"
 	_name_edit.placeholder_text = "Traveler name"
@@ -142,63 +195,112 @@ func _build_creation_panel() -> PanelContainer:
 	row.add_theme_constant_override(&"separation", 12)
 	column.add_child(row)
 	var cancel := Button.new()
+	cancel.name = "CancelCreationButton"
 	cancel.text = "NOT YET"
 	cancel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	cancel.pressed.connect(func() -> void: _creation_panel.visible = false)
+	cancel.pressed.connect(_hide_creation)
 	row.add_child(cancel)
 	var create := Button.new()
 	create.name = "CreateButton"
-	create.text = "BEGIN JOURNEY  ✦"
+	create.text = "BEGIN JOURNEY"
 	create.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	create.pressed.connect(_create_world)
 	row.add_child(create)
-	return panel
 
 
 @private
 func _refresh_worlds() -> void:
 	for child: Node in _world_list.get_children():
 		child.queue_free()
+	_world_buttons.clear()
+	_selected_world_id = ""
+	_continue_button.disabled = true
+	_traveler_button_group = ButtonGroup.new()
+	_traveler_button_group.allow_unpress = false
 	var index := WorldLibrary.list_worlds()
 	_empty_hint.visible = index.worlds.is_empty()
+	var first_world_id := ""
 	for summary: LumenfallWorldSummary in index.worlds:
-		if is_instance_valid(summary):
-			_add_world_card(summary)
-	if index.worlds.is_empty():
+		if not is_instance_valid(summary):
+			continue
+		if first_world_id.is_empty():
+			first_world_id = summary.world_id
+		_add_world_row(summary)
+	if first_world_id.is_empty():
 		_show_creation.call_deferred()
+	else:
+		_select_world(first_world_id)
+		_continue_button.grab_focus.call_deferred()
 
 
 @private
-func _add_world_card(summary: LumenfallWorldSummary) -> void:
+func _add_world_row(summary: LumenfallWorldSummary) -> void:
 	var row := HBoxContainer.new()
-	row.add_theme_constant_override(&"separation", 8)
+	row.name = "Traveler_%s" % summary.world_id
+	row.add_theme_constant_override(&"separation", 6)
 	_world_list.add_child(row)
-	var load_button := Button.new()
-	load_button.name = "Load_%s" % summary.world_id
-	load_button.text = "◇  %s\nChapter %d  •  %s played" % [summary.display_name, summary.quest_stage + 1, _format_time(summary.played_seconds)]
-	load_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	load_button.custom_minimum_size.y = 76.0
-	load_button.pressed.connect(_load_world.bind(summary.world_id))
-	row.add_child(load_button)
+	var select_button := Button.new()
+	select_button.name = "Load_%s" % summary.world_id
+	select_button.text = "%s\nCHAPTER %d  ·  %s PLAYED" % [summary.display_name.to_upper(), summary.quest_stage + 1, _format_time(summary.played_seconds).to_upper()]
+	select_button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	select_button.toggle_mode = true
+	select_button.button_group = _traveler_button_group
+	select_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	select_button.custom_minimum_size.y = 68.0
+	select_button.add_theme_font_size_override(&"font_size", 15)
+	select_button.add_theme_stylebox_override(&"normal", WorldSelectionTheme.traveler_row())
+	select_button.add_theme_stylebox_override(&"hover", WorldSelectionTheme.traveler_row(true))
+	select_button.add_theme_stylebox_override(&"pressed", WorldSelectionTheme.traveler_row(true))
+	select_button.add_theme_stylebox_override(&"focus", WorldSelectionTheme.focus_outline())
+	select_button.pressed.connect(_select_world.bind(summary.world_id))
+	row.add_child(select_button)
+	_world_buttons[summary.world_id] = select_button
 	var reset_button := Button.new()
+	reset_button.name = "Reset_%s" % summary.world_id
 	reset_button.text = "↺"
-	reset_button.tooltip_text = "Start this traveler over"
-	reset_button.custom_minimum_size.x = 55.0
+	reset_button.tooltip_text = "Begin this traveler again"
+	reset_button.custom_minimum_size = Vector2(42.0, 68.0)
+	reset_button.add_theme_stylebox_override(&"normal", WorldSelectionTheme.quiet_button())
 	reset_button.pressed.connect(_reset_world.bind(summary.world_id))
 	row.add_child(reset_button)
 	var delete_button := Button.new()
-	delete_button.text = "✕"
-	delete_button.tooltip_text = "Delete this traveler"
-	delete_button.custom_minimum_size.x = 55.0
+	delete_button.name = "Delete_%s" % summary.world_id
+	delete_button.text = "×"
+	delete_button.tooltip_text = "Remove this traveler"
+	delete_button.custom_minimum_size = Vector2(42.0, 68.0)
+	delete_button.add_theme_stylebox_override(&"normal", WorldSelectionTheme.quiet_button())
 	delete_button.pressed.connect(_delete_world.bind(summary.world_id))
 	row.add_child(delete_button)
 
 
 @private
+func _select_world(world_id: String) -> void:
+	if not _world_buttons.has(world_id):
+		return
+	_selected_world_id = world_id
+	_continue_button.disabled = false
+	var selected_button := _world_buttons[world_id]
+	selected_button.button_pressed = true
+
+
+@private
+func _continue_selected() -> void:
+	if _selected_world_id.is_empty():
+		return
+	_load_world(_selected_world_id)
+
+
+@private
 func _show_creation() -> void:
-	_creation_panel.visible = true
+	_creation_overlay.visible = true
 	_name_edit.text = ""
 	_name_edit.grab_focus.call_deferred()
+
+
+@private
+func _hide_creation() -> void:
+	_creation_overlay.visible = false
+	_continue_button.grab_focus.call_deferred()
 
 
 @private
@@ -218,7 +320,7 @@ func _load_world(world_id: String) -> void:
 func _reset_world(world_id: String) -> void:
 	_pending_world_id = world_id
 	_pending_action = WorldAction.RESET
-	_confirm_dialog.dialog_text = "Begin this traveler's story again? Their world progress, belongings, and choices will be replaced."
+	_confirm_dialog.dialog_text = "Begin this traveler's story again? Their progress, belongings, and choices will be replaced."
 	_confirm_dialog.ok_button_text = "BEGIN AGAIN"
 	_confirm_dialog.popup_centered()
 
@@ -227,7 +329,7 @@ func _reset_world(world_id: String) -> void:
 func _delete_world(world_id: String) -> void:
 	_pending_world_id = world_id
 	_pending_action = WorldAction.DELETE
-	_confirm_dialog.dialog_text = "Remove this traveler from the book? This cannot be undone."
+	_confirm_dialog.dialog_text = "Remove this traveler and their world? This cannot be undone."
 	_confirm_dialog.ok_button_text = "REMOVE TRAVELER"
 	_confirm_dialog.popup_centered()
 
@@ -243,6 +345,36 @@ func _confirm_world_action() -> void:
 	_pending_world_id = ""
 	_pending_action = WorldAction.NONE
 	_refresh_worlds()
+
+
+@private
+func _open_settings() -> void:
+	if is_instance_valid(_settings_panel):
+		return
+	_settings_panel = SettingsPanel.new()
+	_settings_panel.name = "SettingsPanel"
+	_settings_panel.configure(SettingsRepository.load_settings(), null)
+	_settings_panel.closed.connect(_on_settings_closed)
+	add_child(_settings_panel)
+
+
+@private
+func _on_settings_closed() -> void:
+	_settings_panel = null
+
+
+@private
+func _quit() -> void:
+	get_tree().quit()
+
+
+@private
+func _animate_entrance() -> void:
+	modulate.a = 0.0
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_QUAD)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, ^"modulate:a", 1.0, 0.42)
 
 
 @private
