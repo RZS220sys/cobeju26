@@ -15,6 +15,7 @@ func _run() -> void:
 	_test_ccl_round_trip()
 	_test_enum_domains()
 	_test_inventory_rules()
+	_test_relative_time_formatter()
 	_test_asset_integrity()
 	_test_world_storage_and_npc_architecture()
 	_test_source_architecture()
@@ -79,6 +80,18 @@ func _test_inventory_rules() -> void:
 	Inventory.unlock_recipe(state, RecipeCatalog.Id.LANTERN_LENS)
 	Inventory.unlock_recipe(state, RecipeCatalog.Id.LANTERN_LENS)
 	_expect(state.unlocked_recipe_ids == [RecipeCatalog.Id.LANTERN_LENS], "Recipe unlocks are idempotent")
+
+
+@private
+func _test_relative_time_formatter() -> void:
+	_suites += 1
+	var now := 2_000_000_000
+	_expect(RelativeTimeFormatter.format_since(now - 20, now) == "20s ago", "Recent play time uses seconds")
+	_expect(RelativeTimeFormatter.format_since(now - 20 * 60, now) == "20m ago", "Recent play time uses minutes")
+	_expect(RelativeTimeFormatter.format_since(now - 20 * 60 * 60, now) == "20h ago", "Recent play time uses hours")
+	_expect(RelativeTimeFormatter.format_since(now - 20 * 24 * 60 * 60, now) == "20d ago", "Recent play time uses days")
+	_expect(RelativeTimeFormatter.format_since(now - 20 * 365 * 24 * 60 * 60, now) == "20y ago", "Recent play time uses years")
+	_expect(RelativeTimeFormatter.format_since(now + 1, now) == "0s ago", "Future clock drift clamps to the present")
 
 
 @private

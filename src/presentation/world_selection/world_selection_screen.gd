@@ -42,6 +42,7 @@ func _ready() -> void:
 @private
 func _build_interface() -> void:
 	_build_background()
+	_spawn_purple_dots()
 	_build_identity()
 	_build_traveler_menu()
 	_build_creation_overlay()
@@ -63,6 +64,12 @@ func _build_background() -> void:
 	atmosphere.color = Color(0.0, 0.01, 0.02, 0.08)
 	atmosphere.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(atmosphere)
+
+
+@private
+func _spawn_purple_dots() -> void:
+	var particles := PurpleDotParticles.new()
+	add_child(particles)
 
 
 @private
@@ -255,7 +262,7 @@ func _refresh_worlds() -> void:
 func _add_world_row(summary: LumenfallWorldSummary) -> void:
 	var entry := WorldEntryButton.new()
 	entry.name = "Load_%s" % summary.world_id
-	entry.configure(summary, "%s PLAYED" % _format_time(summary.played_seconds))
+	entry.configure(summary, "LAST PLAYED %s" % RelativeTimeFormatter.format_since(summary.last_played_unix))
 	entry.pressed.connect(_load_world.bind(summary.world_id))
 	_world_list.add_child(entry)
 	entry.custom_minimum_size.y = _traveler_menu.size.y * (MENU_BOTTOM_RATIO - MENU_TOP_RATIO) * WORLD_ENTRY_HEIGHT_RATIO
@@ -320,11 +327,3 @@ func _animate_entrance() -> void:
 	tween.set_trans(Tween.TRANS_QUAD)
 	tween.set_ease(Tween.EASE_OUT)
 	tween.tween_property(self, ^"modulate:a", 1.0, 0.42)
-
-
-@private
-func _format_time(seconds: float) -> String:
-	var whole_minutes := floori(seconds / 60.0)
-	if whole_minutes < 60:
-		return "%dm" % whole_minutes
-	return "%dh %02dm" % [floori(float(whole_minutes) / 60.0), whole_minutes % 60]
