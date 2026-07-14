@@ -1,0 +1,22 @@
+model CompletedQuestState {
+	QuestId: int64;
+	CompletedAtUnix: int64;
+}
+
+model QuestProgressState {
+	CurrentStage: int32;
+	ActiveQuestId: int64;
+	CompletedQuests: CompletedQuestState[];
+}
+
+model WorldMetadataState {
+	WorldId: string;
+	PlayedSeconds: float64;
+	LastPlayedUnix: int64;
+}
+
+model GameWorldState {
+	Metadata: WorldMetadataState;
+	Player: GamePlayerState;
+	Quests: QuestProgressState;
+}

@@ -7,34 +7,20 @@
 #[$gd:AddAnnotation("@obfuscate_path")]
 
 // Reusable persistent value shapes.
-import "models/stats/health_stat.ccl";
-import "models/stats/stamina_stat.ccl";
-import "models/stats/progression_stat.ccl";
-import "models/actors/actor_transform_state.ccl";
+import "models/actors/stats.ccl";
+import "models/actors/transform.ccl";
 
 // Player-owned state.
-import "models/inventory/item_stack.ccl";
-import "models/inventory/inventory_state.ccl";
-import "models/crafting/learned_recipe.ccl";
-import "models/crafting/recipe_book_state.ccl";
-import "models/player/player_identity_state.ccl";
-import "models/player/orbit_camera_state.ccl";
-import "models/player/wallet_state.ccl";
-import "models/player/tutorial_progress_state.ccl";
-import "models/player/game_player_state.ccl";
+import "models/inventory/inventory.ccl";
+import "models/crafting/recipes.ccl";
+import "models/player/player_state.ccl";
 
 // NPC-owned state.
-import "models/npcs/npc_disposition_state.ccl";
-import "models/npcs/npc_memory_state.ccl";
-import "models/npcs/npc_relationship_state.ccl";
-import "models/npcs/game_npc_state.ccl";
+import "models/npcs/npc_state.ccl";
 
 // World-owned state and read models.
-import "models/world/quest_progress_state.ccl";
-import "models/world/world_metadata_state.ccl";
-import "models/world/game_world_state.ccl";
-import "models/world/game_world_summary.ccl";
-import "models/world/game_world_index.ccl";
+import "models/world/world_state.ccl";
+import "models/world/world_index.ccl";
 
 // User-owned configuration.
-import "models/settings/game_settings.ccl";
+import "models/settings/settings.ccl";

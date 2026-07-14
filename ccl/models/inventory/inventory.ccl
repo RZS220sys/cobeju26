@@ -2,3 +2,7 @@ model ItemStack {
 	ItemId: int64;
 	ItemCount: int64;
 }
+
+model InventoryState {
+	Stacks: ItemStack[];
+}

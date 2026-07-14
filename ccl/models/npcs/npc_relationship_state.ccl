@@ -1,4 +1,0 @@
-model NpcRelationshipState {
-	OtherNpcId: int64;
-	RelationshipValue: float32;
-}

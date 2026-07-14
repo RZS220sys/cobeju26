@@ -1,4 +1,0 @@
-model ProgressionStat {
-	Level: int32;
-	ExperiencePoints: int64;
-}

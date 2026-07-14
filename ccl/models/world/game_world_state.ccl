@@ -1,5 +1,0 @@
-model GameWorldState {
-	Metadata: WorldMetadataState;
-	Player: GamePlayerState;
-	Quests: QuestProgressState;
-}

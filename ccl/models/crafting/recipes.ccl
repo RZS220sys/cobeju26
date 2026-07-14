@@ -1,3 +1,7 @@
+model LearnedRecipe {
+	RecipeId: int64;
+}
+
 model RecipeBookState {
 	Recipes: LearnedRecipe[];
 }

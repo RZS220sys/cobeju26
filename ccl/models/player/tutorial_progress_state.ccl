@@ -1,3 +1,0 @@
-model TutorialProgressState {
-	CurrentStage: int32;
-}

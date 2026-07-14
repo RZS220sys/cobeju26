@@ -1,3 +1,21 @@
+model PlayerIdentityState {
+	DisplayName: string;
+}
+
+model OrbitCameraState {
+	Yaw: float32;
+	Pitch: float32;
+	ZoomDistance: float32;
+}
+
+model WalletState {
+	GoldCoins: int64;
+}
+
+model TutorialProgressState {
+	CurrentStage: int32;
+}
+
 model GamePlayerState {
 	Identity: PlayerIdentityState;
 	Transform: ActorTransformState;

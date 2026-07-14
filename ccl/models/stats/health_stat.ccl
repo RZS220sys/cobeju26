@@ -1,5 +1,0 @@
-model HealthStat {
-	CurrentHealth: int64;
-	MaximumHealth: int64;
-	HealthLevel: int32;
-}

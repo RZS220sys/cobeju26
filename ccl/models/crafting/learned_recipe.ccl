@@ -1,3 +1,0 @@
-model LearnedRecipe {
-	RecipeId: int64;
-}

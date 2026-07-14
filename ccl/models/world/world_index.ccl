@@ -1,3 +1,14 @@
+// This is a denormalized read model for the world-selection screen, not an
+// ownership model. Player and quest data remain authoritative in their states.
+model GameWorldSummary {
+	WorldId: string;
+	PlayerDisplayName: string;
+	PlayerLevel: int32;
+	PlayedSeconds: float64;
+	QuestStage: int32;
+	LastPlayedUnix: int64;
+}
+
 // Global catalog of locally available worlds. It is stored independently at
 // user://game_data/index.cclbin; individual world data remains inside each
 // user://game_data/<world_id>/ directory.

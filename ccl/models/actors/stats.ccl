@@ -1,0 +1,21 @@
+model HealthStat {
+	CurrentHealth: int64;
+	MaximumHealth: int64;
+	HealthLevel: int32;
+}
+
+model StaminaStat {
+	CurrentStamina: int64;
+	MaximumStamina: int64;
+	DrainPerSecond: int64;
+	StaminaLevel: int32;
+}
+
+// Actors start at level 1. CurrentLevelXp tracks progress only toward the next
+// level; it is not lifetime XP. The required XP is (Level + 1) * 4, so reaching
+// level 2 from level 1 requires 8 XP. When CurrentLevelXp reaches the required
+// amount, increment Level by 1 and reset CurrentLevelXp to 0.
+model ProgressionStat {
+	Level: int32;
+	CurrentLevelXp: int64;
+}

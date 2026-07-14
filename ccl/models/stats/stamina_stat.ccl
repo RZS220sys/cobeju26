@@ -1,6 +1,0 @@
-model StaminaStat {
-	CurrentStamina: int64;
-	MaximumStamina: int64;
-	DrainPerSecond: int64;
-	StaminaLevel: int32;
-}
