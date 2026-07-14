@@ -32,3 +32,52 @@ model PalimpsestSaveData {
 	LensRank: int32;
 	ReservoirRank: int32;
 }
+
+// LUMENFALL profile index. Additional fields must be appended.
+model LumenfallProfileSummary {
+	ProfileId: string;
+	DisplayName: string;
+	PlayedSeconds: float64;
+	QuestStage: int32;
+	LastPlayedUnix: int64;
+}
+
+model LumenfallProfileIndex {
+	SchemaVersion: int32;
+	Profiles: LumenfallProfileSummary[];
+	LastProfileId: string;
+}
+
+// One file per named character. Additional fields must be appended.
+model LumenfallSaveData {
+	SchemaVersion: int32;
+	ProfileId: string;
+	DisplayName: string;
+	PlayedSeconds: float64;
+	PlayerX: float32;
+	PlayerY: float32;
+	PlayerZ: float32;
+	PlayerYaw: float32;
+	QuestStage: int32;
+	ActiveQuestId: string;
+	CompletedQuestIds: string[];
+	InventoryItemIds: string[];
+	InventoryItemCounts: int32[];
+	UnlockedRecipeIds: string[];
+	GoldCoins: int32;
+	RiftglassPieces: int32;
+	CurrentHealth: float32;
+	MaximumHealth: float32;
+	LastPlayedUnix: int64;
+	TutorialStage: int32;
+}
+
+model LumenfallSettings {
+	SchemaVersion: int32;
+	MasterVolume: float32;
+	MouseSensitivity: float32;
+	InvertVertical: bool;
+	FieldOfView: float32;
+	Fullscreen: bool;
+	ReduceMotion: bool;
+}

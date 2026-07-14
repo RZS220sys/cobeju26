@@ -10,8 +10,8 @@ config_version=5
 
 [application]
 
-config/name="PALIMPSEST: Lanterns of the Drowned Archive"
-config/version="1.0.0"
+config/name="LUMENFALL: The First Crossing"
+config/version="0.2.0-dev"
 run/main_scene="uid://xwycde07vf6i"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 run/max_fps=60
