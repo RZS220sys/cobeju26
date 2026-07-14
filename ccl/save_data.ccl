@@ -1,0 +1,34 @@
+// Append new fields only. Old saves must remain readable.
+#[CCLVersion("v0.0.5")]
+#[SerializationType("binary")]
+#[AddCloneMethods(true)]
+#[StrictBinaryParsing(false)]
+#[$gd:UseWGodot(true)]
+#[$gd:AddAnnotation("@obfuscate")]
+#[$gd:AddAnnotation("@obfuscate_path")]
+
+model PalimpsestSaveData {
+	SchemaVersion: int32;
+	Expeditions: int32;
+	SuccessfulExpeditions: int32;
+	TotalEchoes: int32;
+	TotalHollows: int32;
+	ArchiveFragments: int32;
+	UnlockedBoons: string[];
+	DiscoveredRecords: string[];
+	WitnessAffinity: int32;
+	MercyAffinity: int32;
+	ContinuanceAffinity: int32;
+	BestTimeSeconds: float64;
+	LastSeed: int64;
+	Difficulty: int32;
+	AimAssist: bool;
+	MasterVolume: float32;
+	Fullscreen: bool;
+	TutorialSeen: bool;
+	StoryDepth: int32;
+	EndingsSeen: string[];
+	WickRank: int32;
+	LensRank: int32;
+	ReservoirRank: int32;
+}
