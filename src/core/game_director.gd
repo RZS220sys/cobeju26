@@ -53,7 +53,7 @@ func _on_expedition_finished(result: ExpeditionResult) -> void:
 	_profile.expeditions += 1
 	_profile.total_echoes += result.echoes
 	_profile.total_hollows += result.hollows
-	_profile.archive_fragments += result.echoes + floori(float(result.hollows) / 3.0)
+	_profile.archive_fragments += result.echoes + floori(float(result.hollows) / 3.0) + result.tide_bonus
 	for record: String in result.recovered_records:
 		if record not in _profile.discovered_records:
 			_profile.discovered_records.append(record)

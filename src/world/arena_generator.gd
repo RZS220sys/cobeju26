@@ -37,7 +37,7 @@ func _build_floor() -> void:
 	cylinder.radial_segments = 64
 	floor_mesh.mesh = cylinder
 	floor_mesh.position.y = -0.45
-	floor_mesh.material_override = ArchivePalette.make_material(Color("142d38"), 0.0, 0.92)
+	floor_mesh.material_override = ArchivePalette.make_archive_floor_material()
 	floor_body.add_child(floor_mesh)
 
 	for ring_index: int in range(4):

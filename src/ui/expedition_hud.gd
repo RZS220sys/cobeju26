@@ -12,6 +12,8 @@ var _toast_title: Label
 var _toast_body: Label
 var _toast_timer: float = 0.0
 var _end_overlay: Control
+var _boss_bar: ProgressBar
+var _boss_label: Label
 
 
 @override
@@ -64,8 +66,30 @@ func _build_interface() -> void:
 	_time_label.add_theme_font_size_override(&"font_size", 18)
 	top_row.add_child(_time_label)
 
+	var boss_stack := VBoxContainer.new()
+	boss_stack.name = "BossReadout"
+	boss_stack.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	boss_stack.anchor_left = 0.2
+	boss_stack.anchor_right = 0.8
+	boss_stack.position = Vector2(0.0, 105.0)
+	boss_stack.custom_minimum_size.y = 58.0
+	boss_stack.visible = false
+	root.add_child(boss_stack)
+	_boss_label = Label.new()
+	_boss_label.text = "THE INDEX WARDEN // UNAUTHORIZED ENDING DETECTED"
+	_boss_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_boss_label.add_theme_font_size_override(&"font_size", 15)
+	_boss_label.add_theme_color_override(&"font_color", ArchivePalette.magenta().lightened(0.16))
+	boss_stack.add_child(_boss_label)
+	_boss_bar = ProgressBar.new()
+	_boss_bar.show_percentage = false
+	_boss_bar.custom_minimum_size = Vector2(0.0, 18.0)
+	_boss_bar.add_theme_stylebox_override(&"background", ArchivePalette.panel_style(Color(0.015, 0.04, 0.06, 0.92), Color(0.28, 0.2, 0.27, 0.9), 4, 1))
+	_boss_bar.add_theme_stylebox_override(&"fill", ArchivePalette.panel_style(ArchivePalette.magenta().darkened(0.2), ArchivePalette.magenta(), 4, 1))
+	boss_stack.add_child(_boss_bar)
+
 	var controls := Label.new()
-	controls.text = "J / LMB  CAST     SPACE  SLIP     Q  RESONATE"
+	controls.text = "J / LMB / RB  CAST     SPACE / A  SLIP     Q / B  RESONATE"
 	controls.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
 	controls.position = Vector2(28.0, -48.0)
 	controls.add_theme_font_size_override(&"font_size", 13)
@@ -114,6 +138,17 @@ func _make_bar(fill_color: Color, label_text: String) -> ProgressBar:
 	bar.add_theme_stylebox_override(&"background", ArchivePalette.panel_style(Color(0.015, 0.04, 0.06, 0.92), Color(0.2, 0.33, 0.36, 0.8), 4, 1))
 	bar.add_theme_stylebox_override(&"fill", ArchivePalette.panel_style(fill_color.darkened(0.18), fill_color, 4, 1))
 	bar.tooltip_text = label_text
+	var caption := Label.new()
+	caption.text = label_text
+	caption.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	caption.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	caption.add_theme_font_size_override(&"font_size", 10)
+	caption.add_theme_color_override(&"font_color", ArchivePalette.bone())
+	caption.add_theme_color_override(&"font_outline_color", Color(0.0, 0.0, 0.0, 0.85))
+	caption.add_theme_constant_override(&"outline_size", 3)
+	bar.add_child(caption)
 	return bar
 
 
@@ -196,7 +231,7 @@ func show_toast(title_text: String, body_text: String, duration: float = 4.5) ->
 	tween.tween_property(_toast_panel, "modulate:a", 1.0, 0.22)
 
 
-func show_result(victory: bool, echoes: int, kills: int, elapsed: float) -> void:
+func show_result(victory: bool, echoes: int, kills: int, elapsed: float, tide_bonus: int) -> void:
 	_end_overlay.visible = true
 	var heading := _end_overlay.get_node("ResultPanel/Heading") as Label
 	var body := _end_overlay.get_node("ResultPanel/Body") as Label
@@ -204,10 +239,27 @@ func show_result(victory: bool, echoes: int, kills: int, elapsed: float) -> void
 		return
 	heading.text = "THE LANTERN RETURNS" if victory else "THE TIDE CLOSES"
 	heading.add_theme_color_override(&"font_color", ArchivePalette.amber() if victory else ArchivePalette.magenta())
-	body.text = ("You carried %d living memories back through the seal.\n%d Hollows dispersed • %02d:%02d beneath the water\n\nThe Archive has learned the shape of your attention." if victory else "The lantern went dark, but memory is stubborn.\n%d echoes touched • %d Hollows dispersed • %02d:%02d survived") % [echoes, kills, floori(elapsed / 60.0), floori(elapsed) % 60]
+	body.text = ("You carried %d living memories back through the seal.\n%d Hollows dispersed • %02d:%02d beneath the water\nTide mandate: +%d archive fragments\n\nThe Archive has learned the shape of your attention." if victory else "The lantern went dark, but memory is stubborn.\n%d echoes touched • %d Hollows dispersed • %02d:%02d survived\nTide mandate: +%d archive fragments") % [echoes, kills, floori(elapsed / 60.0), floori(elapsed) % 60, tide_bonus]
 	var button := _end_overlay.get_node("ResultPanel/ReturnButton") as Button
 	if is_instance_valid(button):
 		button.grab_focus.call_deferred()
+
+
+func show_boss(maximum: float) -> void:
+	var stack := _boss_bar.get_parent() as Control
+	stack.visible = true
+	_boss_bar.max_value = maximum
+	_boss_bar.value = maximum
+
+
+func set_boss_health(current: float, maximum: float) -> void:
+	_boss_bar.max_value = maximum
+	_boss_bar.value = current
+
+
+func hide_boss() -> void:
+	var stack := _boss_bar.get_parent() as Control
+	stack.visible = false
 
 
 @private

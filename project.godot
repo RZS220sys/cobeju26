@@ -10,17 +10,27 @@ config_version=5
 
 [application]
 
-config/name="cobeju26"
+config/name="PALIMPSEST: Lanterns of the Drowned Archive"
 run/main_scene="uid://xwycde07vf6i"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 run/max_fps=60
 config/icon="res://icon.svg"
 
+[audio]
+
+driver/enable_input=false
+
 [display]
 
+window/size/viewport_width=1280
+window/size/viewport_height=720
 window/size/mode=2
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=false
 
 [physics]
 
@@ -31,3 +41,9 @@ window/stretch/aspect="expand"
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+textures/default_filters/use_nearest_mipmap_filter=false
+
+[wgodot]
+
+gdscript/strict_override_checking=true
+gdscript/strict_signal_callable_checking=true

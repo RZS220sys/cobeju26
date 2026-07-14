@@ -2,6 +2,7 @@ class_name HollowEnemy
 extends CharacterBody3D
 
 signal defeated(position_now: Vector3)
+signal health_changed(current: float, maximum: float)
 
 var target: ArchivistController
 var max_health: float = 58.0
@@ -14,7 +15,9 @@ var is_boss: bool = false
 
 var _attack_cooldown: float = 0.0
 var _stagger_velocity: Vector3 = Vector3.ZERO
+var _special_cooldown: float = 2.2
 var _visual: MeshInstance3D
+var _model_visual: Node3D
 
 
 @override
@@ -97,10 +100,21 @@ func _build_body() -> void:
 	eye.material_override = ArchivePalette.make_material(ArchivePalette.magenta(), 4.0, 0.1)
 	add_child(eye)
 
+	_model_visual = ArchiveModelLibrary.instantiate_model(ArchiveModelLibrary.enemy_path(enemy_kind, is_boss))
+	if is_instance_valid(_model_visual):
+		_model_visual.name = "HollowModel"
+		_model_visual.rotation.y = PI
+		if is_elite and not is_boss:
+			_model_visual.scale = Vector3.ONE * 1.15
+		add_child(_model_visual)
+		_visual.visible = false
+		eye.visible = false
+
 
 @override
 func _physics_process(delta: float) -> void:
 	_attack_cooldown = maxf(0.0, _attack_cooldown - delta)
+	_special_cooldown = maxf(0.0, _special_cooldown - delta)
 	_stagger_velocity = _stagger_velocity.move_toward(Vector3.ZERO, delta * 18.0)
 	if not is_instance_valid(target) or target.health <= 0.0:
 		velocity = Vector3.ZERO
@@ -108,6 +122,9 @@ func _physics_process(delta: float) -> void:
 	var direction := target.global_position - global_position
 	direction.y = 0.0
 	var distance := direction.length()
+	if is_boss and _special_cooldown <= 0.0:
+		_special_cooldown = 3.2 if health < max_health * 0.5 else 4.25
+		_fire_mandate()
 	if distance > 0.05:
 		direction /= distance
 		rotation.y = lerp_angle(rotation.y, atan2(-direction.x, -direction.z), minf(1.0, delta * 8.0))
@@ -132,8 +149,14 @@ func take_damage(amount: float, push: Vector3 = Vector3.ZERO) -> void:
 	if health <= 0.0:
 		return
 	health -= amount
+	health_changed.emit(maxf(0.0, health), max_health)
 	_stagger_velocity += push * (2.1 if not is_elite else 0.8)
-	if is_instance_valid(_visual):
+	if is_instance_valid(_model_visual):
+		var hit_tween := create_tween()
+		var original_scale := _model_visual.scale
+		hit_tween.tween_property(_model_visual, "scale", original_scale * 1.16, 0.055)
+		hit_tween.tween_property(_model_visual, "scale", original_scale, 0.11)
+	elif is_instance_valid(_visual):
 		var original_material := _visual.material_override
 		_visual.material_override = ArchivePalette.make_material(ArchivePalette.bone(), 2.8, 0.2)
 		var tween := create_tween()
@@ -157,3 +180,16 @@ func _fire_orb() -> void:
 	orb.configure(shot_direction, 14.0 if is_elite else 9.0)
 	get_parent().add_child(orb)
 	orb.global_position = global_position + Vector3.UP * 1.0 + shot_direction.normalized() * 0.7
+
+
+@private
+func _fire_mandate() -> void:
+	var projectile_count := 12 if health < max_health * 0.5 else 8
+	for index: int in range(projectile_count):
+		var angle := float(index) / float(projectile_count) * TAU
+		var shot_direction := Vector3(cos(angle), 0.0, sin(angle))
+		var orb := HollowOrb.new()
+		orb.configure(shot_direction, 10.0)
+		orb.speed = 6.2 if health >= max_health * 0.5 else 7.4
+		get_parent().add_child(orb)
+		orb.global_position = global_position + Vector3.UP * 1.0 + shot_direction * 1.0

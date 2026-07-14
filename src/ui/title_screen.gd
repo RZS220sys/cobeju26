@@ -95,7 +95,7 @@ func _build_interface() -> void:
 	_add_secondary_button(secondary_row, "QUIT", quit_requested.emit)
 
 	var controls := Label.new()
-	controls.text = "WASD move   •   J / left click cast   •   SPACE slip   •   Q resonate   •   E interact"
+	controls.text = "WASD / left stick move   •   J / LMB / RB cast   •   SPACE / A slip   •   Q / B resonate"
 	controls.add_theme_font_size_override(&"font_size", 14)
 	controls.add_theme_color_override(&"font_color", Color(0.65, 0.76, 0.78, 0.9))
 	_add_limited(layout, controls, 610.0)

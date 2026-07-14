@@ -21,6 +21,15 @@ func _configure_input() -> void:
 	_add_key_action(&"resonance", KEY_Q)
 	_add_key_action(&"interact", KEY_E)
 	_add_key_action(&"pause_game", KEY_ESCAPE)
+	_add_joy_axis(&"move_left", JOY_AXIS_LEFT_X, -1.0)
+	_add_joy_axis(&"move_right", JOY_AXIS_LEFT_X, 1.0)
+	_add_joy_axis(&"move_forward", JOY_AXIS_LEFT_Y, -1.0)
+	_add_joy_axis(&"move_back", JOY_AXIS_LEFT_Y, 1.0)
+	_add_joy_button(&"attack", JOY_BUTTON_RIGHT_SHOULDER)
+	_add_joy_button(&"dash", JOY_BUTTON_A)
+	_add_joy_button(&"resonance", JOY_BUTTON_B)
+	_add_joy_button(&"interact", JOY_BUTTON_X)
+	_add_joy_button(&"pause_game", JOY_BUTTON_START)
 
 
 @private
@@ -35,3 +44,22 @@ func _add_key_action(action: StringName, keycode: Key) -> void:
 	var key_event := InputEventKey.new()
 	key_event.physical_keycode = keycode
 	InputMap.action_add_event(action, key_event)
+
+
+@private
+func _add_joy_button(action: StringName, button: JoyButton) -> void:
+	if not InputMap.has_action(action):
+		InputMap.add_action(action)
+	var joy_event := InputEventJoypadButton.new()
+	joy_event.button_index = button
+	InputMap.action_add_event(action, joy_event)
+
+
+@private
+func _add_joy_axis(action: StringName, axis: JoyAxis, axis_value: float) -> void:
+	if not InputMap.has_action(action):
+		InputMap.add_action(action)
+	var joy_event := InputEventJoypadMotion.new()
+	joy_event.axis = axis
+	joy_event.axis_value = axis_value
+	InputMap.action_add_event(action, joy_event)

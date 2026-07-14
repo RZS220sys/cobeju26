@@ -6,4 +6,4 @@ var echoes: int = 0
 var hollows: int = 0
 var elapsed_seconds: float = 0.0
 var recovered_records: Array[String] = []
-
+var tide_bonus: int = 0

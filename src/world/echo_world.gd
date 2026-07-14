@@ -21,6 +21,7 @@ var _boss_active: bool = false
 var _pause_overlay: PauseOverlay
 var _manually_paused: bool = false
 var _soundscape: ArchiveSoundscape
+var _tide: TideDefinition
 
 
 func configure(profile: PalimpsestSaveData, soundscape: ArchiveSoundscape) -> void:
@@ -31,6 +32,7 @@ func configure(profile: PalimpsestSaveData, soundscape: ArchiveSoundscape) -> vo
 @override
 func _ready() -> void:
 	_rng.seed = _profile.last_seed if is_instance_valid(_profile) else 1907
+	_tide = TideCatalog.for_seed(_rng.seed)
 	_build_environment()
 	_build_expedition()
 
@@ -43,7 +45,7 @@ func _build_environment() -> void:
 	environment.background_color = ArchivePalette.ink()
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	environment.ambient_light_color = Color("7790a0")
-	environment.ambient_light_energy = 1.15
+	environment.ambient_light_energy = 0.92
 	environment.reflected_light_source = Environment.REFLECTION_SOURCE_DISABLED
 	environment.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	environment.fog_enabled = true
@@ -57,7 +59,7 @@ func _build_environment() -> void:
 	var moon := DirectionalLight3D.new()
 	moon.rotation_degrees = Vector3(-58.0, -28.0, 0.0)
 	moon.light_color = Color("9bc9cf")
-	moon.light_energy = 1.35
+	moon.light_energy = 1.12
 	moon.shadow_enabled = true
 	moon.directional_shadow_max_distance = 48.0
 	add_child(moon)
@@ -83,6 +85,7 @@ func _build_expedition() -> void:
 			_player.max_health += 40.0
 			_player.health = _player.max_health
 			_player.damage_reduction = 0.15
+	_apply_player_tide()
 	_player.died.connect(_on_player_died)
 	_player.resonance_cast.connect(_on_resonance_cast)
 	_player.pulse_cast.connect(_soundscape.play_cast)
@@ -127,6 +130,15 @@ func _build_expedition() -> void:
 	_hud.bind_player(_player)
 	_hud.set_objective(_echoes, _echo_goal)
 	_hud.show_toast("WITNESS // FIRST CONTACT", "Lamplighter. Seven echoes will open the cyan descent seal. The Hollows are memories that learned hunger.", 7.5)
+	var tide_timer := Timer.new()
+	tide_timer.one_shot = true
+	tide_timer.wait_time = 7.8
+	tide_timer.timeout.connect(func() -> void:
+		if not _finished:
+			_hud.show_toast("TIDE CONDITION // %s" % _tide.title, _tide.description, 6.0)
+	)
+	add_child(tide_timer)
+	tide_timer.start()
 
 
 @override
@@ -150,7 +162,10 @@ func _spawn_enemy(elite: bool = false, boss: bool = false, forced_kind: int = -1
 	var enemy := HollowEnemy.new()
 	var kind := forced_kind
 	if kind < 0:
-		kind = _rng.randi_range(0, 2 if _elapsed > 35.0 else 1)
+		if _tide.tide_id == &"black_index" and _rng.randf() < 0.58:
+			kind = 1
+		else:
+			kind = _rng.randi_range(0, 2 if _elapsed > 35.0 else 1)
 	enemy.configure(_player, kind, elite, boss)
 	if is_instance_valid(_profile):
 		if _profile.difficulty == 0:
@@ -162,6 +177,13 @@ func _spawn_enemy(elite: bool = false, boss: bool = false, forced_kind: int = -1
 			enemy.health = enemy.max_health
 			enemy.touch_damage *= 1.2
 			enemy.move_speed *= 1.12
+	if _tide.tide_id == &"glass":
+		enemy.move_speed *= 1.16
+	elif _tide.tide_id == &"mercy":
+		enemy.max_health *= 1.18
+		enemy.health = enemy.max_health
+	elif _tide.tide_id == &"black_index" and kind == 1:
+		enemy.move_speed *= 1.1
 	if boss:
 		enemy.name = "TheIndexWarden"
 	elif kind == 1:
@@ -172,6 +194,9 @@ func _spawn_enemy(elite: bool = false, boss: bool = false, forced_kind: int = -1
 		enemy.name = "GildedHollow" if elite else "Hollow"
 	enemy.position = _arena.random_open_position(12.0, 18.0)
 	enemy.defeated.connect(_on_enemy_defeated.bind(enemy))
+	if boss:
+		enemy.health_changed.connect(_hud.set_boss_health)
+		_hud.show_boss(enemy.max_health)
 	add_child(enemy)
 
 
@@ -207,6 +232,7 @@ func _on_enemy_defeated(_at: Vector3, enemy: HollowEnemy) -> void:
 		_hud.show_toast("HOLLOW DISPERSED", "Not killed. Returned to a memory without teeth.", 3.8)
 	if enemy.is_boss:
 		_boss_active = false
+		_hud.hide_boss()
 		_gate.activate()
 		_hud.set_objective(_echoes, _echo_goal, true)
 		_hud.show_toast("WARDEN DISPERSED // SEAL OPEN", "The Archive cannot stop you now. It can only remember what you choose next.", 6.0)
@@ -295,7 +321,7 @@ func _finish(victory: bool) -> void:
 	_player.set_physics_process(false)
 	for enemy_node: Node in get_tree().get_nodes_in_group(&"enemies"):
 		enemy_node.set_physics_process(false)
-	_hud.show_result(victory, _echoes, _kills, _elapsed)
+	_hud.show_result(victory, _echoes, _kills, _elapsed, _tide.bonus_fragments)
 
 
 @private
@@ -311,7 +337,21 @@ func _emit_result(victory: bool) -> void:
 	result.hollows = _kills
 	result.elapsed_seconds = _elapsed
 	result.recovered_records = _recovered_records.duplicate()
+	result.tide_bonus = _tide.bonus_fragments
 	expedition_finished.emit(result)
+
+
+@private
+func _apply_player_tide() -> void:
+	match _tide.tide_id:
+		&"mercy":
+			_player.healing_per_defeat += 2.0
+		&"low_lantern":
+			_player.max_health = maxf(70.0, _player.max_health - 20.0)
+			_player.health = minf(_player.health, _player.max_health)
+			_player.pulse_damage += 6.0
+		&"black_index":
+			_player.focus_regeneration *= 1.12
 
 
 @private

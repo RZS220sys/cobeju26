@@ -45,6 +45,18 @@ static func make_material(color: Color, emission_strength: float = 0.0, roughnes
 	return result
 
 
+static func make_archive_floor_material() -> StandardMaterial3D:
+	var result := StandardMaterial3D.new()
+	result.albedo_color = Color(0.56, 0.63, 0.68, 1.0)
+	var resource := ResourceLoader.load("res://assets/textures/archive_floor.png", "Texture2D")
+	if resource is Texture2D:
+		result.albedo_texture = resource as Texture2D
+	result.roughness = 0.86
+	result.metallic = 0.08
+	result.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
+	return result
+
+
 static func panel_style(color: Color, border: Color, radius: int = 10, width: int = 1) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = color

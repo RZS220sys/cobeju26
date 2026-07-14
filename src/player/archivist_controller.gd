@@ -31,6 +31,9 @@ var _dash_direction: Vector3 = Vector3.ZERO
 var _invulnerable_time: float = 0.0
 var _camera: Camera3D
 var _body_visual: MeshInstance3D
+var _model_visual: Node3D
+var _camera_shake: float = 0.0
+var _camera_time: float = 0.0
 
 
 @override
@@ -96,6 +99,15 @@ func _build_body() -> void:
 	lantern_light.shadow_opacity = 0.5
 	add_child(lantern_light)
 
+	_model_visual = ArchiveModelLibrary.instantiate_model("res://assets/models/archivist.glb")
+	if is_instance_valid(_model_visual):
+		_model_visual.name = "LamplighterModel"
+		_model_visual.rotation.y = PI
+		add_child(_model_visual)
+		_body_visual.visible = false
+		mantle.visible = false
+		lantern.visible = false
+
 	_camera = Camera3D.new()
 	_camera.name = "ExpeditionCamera"
 	_camera.position = Vector3(0.0, 13.0, 10.5)
@@ -107,6 +119,11 @@ func _build_body() -> void:
 
 @override
 func _physics_process(delta: float) -> void:
+	_camera_time += delta
+	_camera_shake = maxf(0.0, _camera_shake - delta * 2.8)
+	if is_instance_valid(_camera):
+		var shake_amount := _camera_shake * _camera_shake * 0.22
+		_camera.position = Vector3(0.0, 13.0, 10.5) + Vector3(sin(_camera_time * 61.0), sin(_camera_time * 47.0), 0.0) * shake_amount
 	_attack_cooldown = maxf(0.0, _attack_cooldown - delta)
 	_dash_cooldown = maxf(0.0, _dash_cooldown - delta)
 	_invulnerable_time = maxf(0.0, _invulnerable_time - delta)
@@ -194,6 +211,9 @@ func _try_resonance() -> void:
 	focus -= 40.0
 	focus_changed.emit(focus, max_focus)
 	resonance_cast.emit(global_position)
+	_camera_shake = maxf(_camera_shake, 0.58)
+	if not Input.get_connected_joypads().is_empty():
+		Input.start_joy_vibration(Input.get_connected_joypads()[0], 0.18, 0.32, 0.18)
 	for candidate: Node in get_tree().get_nodes_in_group(&"enemies"):
 		if candidate is HollowEnemy:
 			var hollow := candidate as HollowEnemy
@@ -210,7 +230,14 @@ func take_damage(amount: float) -> void:
 	_invulnerable_time = 0.55
 	health_changed.emit(health, max_health)
 	hurt.emit()
-	if is_instance_valid(_body_visual):
+	_camera_shake = 1.0
+	if not Input.get_connected_joypads().is_empty():
+		Input.start_joy_vibration(Input.get_connected_joypads()[0], 0.35, 0.62, 0.14)
+	if is_instance_valid(_model_visual):
+		var model_tween := create_tween()
+		model_tween.tween_property(_model_visual, "scale", Vector3(1.2, 0.84, 1.2), 0.07)
+		model_tween.tween_property(_model_visual, "scale", Vector3.ONE, 0.14)
+	elif is_instance_valid(_body_visual):
 		var tween := create_tween()
 		tween.tween_property(_body_visual, "scale", Vector3(1.25, 0.82, 1.25), 0.07)
 		tween.tween_property(_body_visual, "scale", Vector3.ONE, 0.14)

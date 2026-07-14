@@ -33,7 +33,7 @@ func _build_visual() -> void:
 	outer_mesh.size = Vector3(0.55, 1.05, 0.55)
 	outer.mesh = outer_mesh
 	outer.rotation_degrees = Vector3(0.0, 45.0, 45.0)
-	outer.material_override = ArchivePalette.make_material(ArchivePalette.cyan(), 3.2, 0.18)
+	outer.material_override = ArchivePalette.make_material(ArchivePalette.cyan().darkened(0.22), 1.55, 0.18)
 	add_child(outer)
 
 	var orbit := MeshInstance3D.new()
@@ -44,12 +44,24 @@ func _build_visual() -> void:
 	orbit_mesh.ring_segments = 18
 	orbit.mesh = orbit_mesh
 	orbit.rotation_degrees.x = 72.0
-	orbit.material_override = ArchivePalette.make_material(ArchivePalette.brass(), 1.0, 0.35)
+	orbit.material_override = ArchivePalette.make_material(ArchivePalette.brass(), 0.35, 0.35)
 	add_child(orbit)
+	for mote_index: int in range(4):
+		var mote := MeshInstance3D.new()
+		var mote_mesh := SphereMesh.new()
+		mote_mesh.radius = 0.045
+		mote_mesh.height = 0.09
+		mote_mesh.radial_segments = 8
+		mote_mesh.rings = 4
+		mote.mesh = mote_mesh
+		var angle := float(mote_index) / 4.0 * TAU
+		mote.position = Vector3(cos(angle) * 0.77, sin(angle * 2.0) * 0.18, sin(angle) * 0.77)
+		mote.material_override = ArchivePalette.make_material(ArchivePalette.cyan(), 1.8, 0.1)
+		add_child(mote)
 
 	var light := OmniLight3D.new()
 	light.light_color = ArchivePalette.cyan()
-	light.light_energy = 2.8
+	light.light_energy = 1.25
 	light.omni_range = 5.0
 	light.shadow_enabled = false
 	add_child(light)
