@@ -1,0 +1,12 @@
+// Global catalog of locally available worlds. It is stored independently at
+// user://game_data/index.cclbin; individual world data remains inside each
+// user://game_data/<world_id>/ directory.
+model GameWorldIndex {
+	// Lightweight entries used to populate and sort the world-selection screen
+	// without opening every world's full state file.
+	Worlds: GameWorldSummary[];
+
+	// World most recently written to the index. Reserved for a direct Continue
+	// flow; current world-selection behavior does not read this field.
+	LastWorldId: string;
+}

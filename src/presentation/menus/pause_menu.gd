@@ -21,7 +21,7 @@ func _ready() -> void:
 func _build_interface() -> void:
 	_root = Control.new()
 	_root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_root.theme = LumenfallUiTheme.create()
+	_root.theme = GameUiTheme.create()
 	add_child(_root)
 	var veil := ColorRect.new()
 	veil.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -36,7 +36,7 @@ func _build_interface() -> void:
 	veil.add_child(layout)
 	var menu := PanelContainer.new()
 	menu.custom_minimum_size.x = 430.0
-	menu.add_theme_stylebox_override(&"panel", LumenfallUiTheme.panel())
+	menu.add_theme_stylebox_override(&"panel", GameUiTheme.panel())
 	layout.add_child(menu)
 	var menu_column := VBoxContainer.new()
 	menu_column.add_theme_constant_override(&"separation", 14)
@@ -58,7 +58,7 @@ func _build_interface() -> void:
 	menu_column.add_child(hint)
 	var guide := PanelContainer.new()
 	guide.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	guide.add_theme_stylebox_override(&"panel", LumenfallUiTheme.card())
+	guide.add_theme_stylebox_override(&"panel", GameUiTheme.card())
 	layout.add_child(guide)
 	var guide_column := VBoxContainer.new()
 	guide_column.add_theme_constant_override(&"separation", 14)

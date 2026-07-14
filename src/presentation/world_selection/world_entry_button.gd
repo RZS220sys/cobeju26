@@ -5,7 +5,7 @@ var _traveler_name: String = ""
 var _journey_status: String = ""
 
 
-func configure(summary: LumenfallWorldSummary, last_played_text: String) -> void:
+func configure(summary: GameWorldSummary, last_played_text: String) -> void:
 	_traveler_name = summary.display_name.to_upper()
 	_journey_status = last_played_text.to_upper()
 	queue_redraw()

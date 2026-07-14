@@ -1,0 +1,4 @@
+model ItemStack {
+	ItemId: int64;
+	ItemCount: int64;
+}

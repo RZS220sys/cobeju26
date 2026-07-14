@@ -2,23 +2,23 @@
 
 @obfuscate
 @obfuscate_path
-class_name LumenfallWorldIndex
+class_name GameWorldIndex
 
 const MODEL_ID_LUMENFALL_WORLD_INDEX = 2
 
 var schema_version: int
-var worlds: Array[LumenfallWorldSummary]
+var worlds: Array[GameWorldSummary]
 var last_world_id: String
 
 func get_model_id() -> int:
 	return MODEL_ID_LUMENFALL_WORLD_INDEX
 
-func clone_empty() -> LumenfallWorldIndex:
-	return LumenfallWorldIndex.new()
+func clone_empty() -> GameWorldIndex:
+	return GameWorldIndex.new()
 
 
-func deep_clone() -> LumenfallWorldIndex:
-	var clone := LumenfallWorldIndex.new()
+func deep_clone() -> GameWorldIndex:
+	var clone := GameWorldIndex.new()
 	clone.schema_version = schema_version
 	clone.worlds = []
 	for item in worlds:
@@ -48,8 +48,8 @@ func serialize_binary() -> PackedByteArray:
 
 	return buffer.data_array
 
-static func deserialize_binary(data: PackedByteArray) -> LumenfallWorldIndex:
-	var model_result := LumenfallWorldIndex.new()
+static func deserialize_binary(data: PackedByteArray) -> GameWorldIndex:
+	var model_result := GameWorldIndex.new()
 	if not data or data.is_empty():
 		return model_result
 
@@ -64,7 +64,7 @@ static func deserialize_binary(data: PackedByteArray) -> LumenfallWorldIndex:
 	if buffer.get_size() - buffer.get_position() < 4:
 		return model_result
 	var worlds_len := buffer.get_u32()
-	model_result.worlds = [] as Array[LumenfallWorldSummary]
+	model_result.worlds = [] as Array[GameWorldSummary]
 	for i in range(worlds_len):
 		if buffer.get_size() - buffer.get_position() < 1:
 			return model_result
@@ -78,7 +78,7 @@ static func deserialize_binary(data: PackedByteArray) -> LumenfallWorldIndex:
 			if item_len > buffer.get_size() - buffer.get_position():
 				return model_result
 			var item_bytes: PackedByteArray = buffer.get_data_bytes(item_len)
-			model_result.worlds.append(LumenfallWorldSummary.deserialize_binary(item_bytes))
+			model_result.worlds.append(GameWorldSummary.deserialize_binary(item_bytes))
 		else:
 			return model_result
 

@@ -1,0 +1,10 @@
+// This is a denormalized read model for the world-selection screen, not an
+// ownership model. Player and quest data remain authoritative in their states.
+model GameWorldSummary {
+	WorldId: string;
+	PlayerDisplayName: string;
+	PlayerLevel: int32;
+	PlayedSeconds: float64;
+	QuestStage: int32;
+	LastPlayedUnix: int64;
+}

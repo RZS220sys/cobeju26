@@ -2,7 +2,7 @@ class_name Inventory
 extends RefCounted
 
 
-static func count(state: LumenfallWorldState, item_id: ItemCatalog.Id) -> int:
+static func count(state: GameWorldState, item_id: ItemCatalog.Id) -> int:
 	if not is_instance_valid(state) or item_id == ItemCatalog.Id.NONE:
 		return 0
 	for index: int in range(state.inventory_item_ids.size()):
@@ -11,7 +11,7 @@ static func count(state: LumenfallWorldState, item_id: ItemCatalog.Id) -> int:
 	return 0
 
 
-static func add(state: LumenfallWorldState, item_id: ItemCatalog.Id, amount: int = 1) -> void:
+static func add(state: GameWorldState, item_id: ItemCatalog.Id, amount: int = 1) -> void:
 	if item_id == ItemCatalog.Id.NONE or amount <= 0:
 		return
 	for index: int in range(state.inventory_item_ids.size()):
@@ -24,7 +24,7 @@ static func add(state: LumenfallWorldState, item_id: ItemCatalog.Id, amount: int
 	state.inventory_item_counts.append(amount)
 
 
-static func remove(state: LumenfallWorldState, item_id: ItemCatalog.Id, amount: int = 1) -> bool:
+static func remove(state: GameWorldState, item_id: ItemCatalog.Id, amount: int = 1) -> bool:
 	if amount <= 0 or count(state, item_id) < amount:
 		return false
 	for index: int in range(state.inventory_item_ids.size()):
@@ -37,10 +37,10 @@ static func remove(state: LumenfallWorldState, item_id: ItemCatalog.Id, amount: 
 	return false
 
 
-static func unlock_recipe(state: LumenfallWorldState, recipe_id: RecipeCatalog.Id) -> void:
+static func unlock_recipe(state: GameWorldState, recipe_id: RecipeCatalog.Id) -> void:
 	if recipe_id not in state.unlocked_recipe_ids:
 		state.unlocked_recipe_ids.append(recipe_id)
 
 
-static func has_recipe(state: LumenfallWorldState, recipe_id: RecipeCatalog.Id) -> bool:
+static func has_recipe(state: GameWorldState, recipe_id: RecipeCatalog.Id) -> bool:
 	return recipe_id in state.unlocked_recipe_ids

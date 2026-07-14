@@ -2,7 +2,7 @@ class_name GameDirector
 extends Node
 
 var _world_selection_screen: WorldSelectionScreen
-var _world: LumenfallWorld
+var _world: GameWorld
 
 
 @override
@@ -19,11 +19,11 @@ func _show_world_selection() -> void:
 
 
 @private
-func _start_world(state: LumenfallWorldState) -> void:
+func _start_world(state: GameWorldState) -> void:
 	if is_instance_valid(_world_selection_screen):
 		_world_selection_screen.queue_free()
-	_world = LumenfallWorld.new()
-	_world.name = "LumenfallWorld"
+	_world = GameWorld.new()
+	_world.name = "GameWorld"
 	_world.configure(state)
 	_world.traveler_book_requested.connect(_return_to_world_selection)
 	add_child(_world)

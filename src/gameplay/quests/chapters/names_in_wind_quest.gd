@@ -1,10 +1,10 @@
 class_name NamesInWindQuest
 extends Node
 
-var world_state: LumenfallWorldState
+var world_state: GameWorldState
 var player: WayfarerController
 var hud: GameHud
-var world: LumenfallWorld
+var world: GameWorld
 
 var missing_people: Dictionary[NpcCatalog.Id, NpcActor] = {}
 var _prisons: Dictionary[NpcCatalog.Id, Node3D] = {}
@@ -26,7 +26,7 @@ const RESCUED_ITEMS: Dictionary[NpcCatalog.Id, ItemCatalog.Id] = {
 }
 
 
-func configure(state_value: LumenfallWorldState, player_value: WayfarerController, hud_value: GameHud, world_value: LumenfallWorld) -> void:
+func configure(state_value: GameWorldState, player_value: WayfarerController, hud_value: GameHud, world_value: GameWorld) -> void:
 	world_state = state_value
 	player = player_value
 	hud = hud_value

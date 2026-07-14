@@ -1,4 +1,4 @@
-class_name LumenfallUiTheme
+class_name GameUiTheme
 extends RefCounted
 
 

@@ -1,4 +1,4 @@
-class_name LumenfallSoundscape
+class_name GameSoundscape
 extends Node
 
 var target: WayfarerController
@@ -25,7 +25,7 @@ func configure(target_value: WayfarerController) -> void:
 
 @override
 func _ready() -> void:
-	name = "LumenfallSoundscape"
+	name = "GameSoundscape"
 	_wind = _make_loop_player("WindLayer", _build_wind_loop(37.0, 91421), -22.0)
 	_wildlife = _make_loop_player("WildlifeLayer", _build_wildlife_loop(43.0), -24.0)
 	_harmony = _make_loop_player("MemoryHarmony", _build_harmony_loop(31.0), -27.0)

@@ -2,7 +2,7 @@
 
 @obfuscate
 @obfuscate_path
-class_name LumenfallWorldState
+class_name GameWorldState
 
 const MODEL_ID_LUMENFALL_WORLD_STATE = 3
 
@@ -30,12 +30,12 @@ var tutorial_stage: int
 func get_model_id() -> int:
 	return MODEL_ID_LUMENFALL_WORLD_STATE
 
-func clone_empty() -> LumenfallWorldState:
-	return LumenfallWorldState.new()
+func clone_empty() -> GameWorldState:
+	return GameWorldState.new()
 
 
-func deep_clone() -> LumenfallWorldState:
-	var clone := LumenfallWorldState.new()
+func deep_clone() -> GameWorldState:
+	var clone := GameWorldState.new()
 	clone.schema_version = schema_version
 	clone.world_id = world_id
 	clone.display_name = display_name
@@ -116,8 +116,8 @@ func serialize_binary() -> PackedByteArray:
 
 	return buffer.data_array
 
-static func deserialize_binary(data: PackedByteArray) -> LumenfallWorldState:
-	var model_result := LumenfallWorldState.new()
+static func deserialize_binary(data: PackedByteArray) -> GameWorldState:
+	var model_result := GameWorldState.new()
 	if not data or data.is_empty():
 		return model_result
 

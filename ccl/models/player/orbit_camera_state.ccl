@@ -1,0 +1,5 @@
+model OrbitCameraState {
+	Yaw: float32;
+	Pitch: float32;
+	ZoomDistance: float32;
+}

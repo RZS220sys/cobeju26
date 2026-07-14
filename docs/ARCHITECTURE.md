@@ -6,7 +6,7 @@ Rules:
 
 - One concept per catalog; never recreate a global “types” bucket.
 - Every `class_name` equals its snake_case filename.
-- `LumenfallWorld` composes nodes only. Runtime behavior belongs to focused coordinators.
+- `GameWorld` composes nodes only. Runtime behavior belongs to focused coordinators.
 - UI creation/state lives in presentation classes, not world/location classes.
 - Shared behavior goes in a real base class; character-specific routines/reactions stay in concrete NPC classes.
 - New named NPC = concrete class + `NpcCatalog.Id` + factory registration + independent CCL file.

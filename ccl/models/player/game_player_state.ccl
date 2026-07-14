@@ -1,0 +1,12 @@
+model GamePlayerState {
+	Identity: PlayerIdentityState;
+	Transform: ActorTransformState;
+	Health: HealthStat;
+	Stamina: StaminaStat;
+	Progression: ProgressionStat;
+	Camera: OrbitCameraState;
+	Inventory: InventoryState;
+	RecipeBook: RecipeBookState;
+	Wallet: WalletState;
+	Tutorial: TutorialProgressState;
+}

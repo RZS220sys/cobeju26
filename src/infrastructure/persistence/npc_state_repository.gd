@@ -4,28 +4,28 @@ extends RefCounted
 const SCHEMA_VERSION := 1
 
 
-static func load_state(world_id: String, npc_id: NpcCatalog.Id) -> LumenfallNpcState:
+static func load_state(world_id: String, npc_id: NpcCatalog.Id) -> GameNpcState:
 	var path := StoragePaths.npc_file(world_id, npc_id)
 	if not FileAccess.file_exists(path):
 		return create_state(world_id, npc_id)
 	var file := FileAccess.open(path, FileAccess.READ)
 	if not is_instance_valid(file):
 		return create_state(world_id, npc_id)
-	var decoded := LumenfallNpcState.deserialize_binary(file.get_buffer(file.get_length()))
+	var decoded := GameNpcState.deserialize_binary(file.get_buffer(file.get_length()))
 	file.close()
 	if not is_instance_valid(decoded) or decoded.schema_version != SCHEMA_VERSION or decoded.npc_id != npc_id:
 		return create_state(world_id, npc_id)
 	return decoded
 
 
-static func save_state(world_id: String, state: LumenfallNpcState) -> bool:
+static func save_state(world_id: String, state: GameNpcState) -> bool:
 	StoragePaths.ensure_world(world_id)
 	state.schema_version = SCHEMA_VERSION
 	return AtomicFileWriter.write(StoragePaths.npc_file(world_id, state.npc_id), state.serialize_binary())
 
 
-static func create_state(world_id: String, npc_id: NpcCatalog.Id) -> LumenfallNpcState:
-	var state := LumenfallNpcState.new()
+static func create_state(world_id: String, npc_id: NpcCatalog.Id) -> GameNpcState:
+	var state := GameNpcState.new()
 	state.schema_version = SCHEMA_VERSION
 	state.npc_id = npc_id
 	state.mood = NpcCatalog.Mood.CALM

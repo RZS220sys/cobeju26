@@ -3,11 +3,11 @@ extends CanvasLayer
 
 signal closed
 
-var settings: LumenfallSettings
+var settings: GameSettings
 var camera_rig: ThirdPersonCamera
 
 
-func configure(settings_value: LumenfallSettings, camera_value: ThirdPersonCamera) -> void:
+func configure(settings_value: GameSettings, camera_value: ThirdPersonCamera) -> void:
 	settings = settings_value
 	camera_rig = camera_value
 
@@ -25,13 +25,13 @@ func _build_interface() -> void:
 	veil.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	veil.color = Color(0.01, 0.035, 0.03, 0.96)
 	veil.mouse_filter = Control.MOUSE_FILTER_STOP
-	veil.theme = LumenfallUiTheme.create()
+	veil.theme = GameUiTheme.create()
 	add_child(veil)
 	var panel := PanelContainer.new()
 	panel.set_anchors_preset(Control.PRESET_CENTER)
 	panel.position = Vector2(-430.0, -320.0)
 	panel.size = Vector2(860.0, 640.0)
-	panel.add_theme_stylebox_override(&"panel", LumenfallUiTheme.panel())
+	panel.add_theme_stylebox_override(&"panel", GameUiTheme.panel())
 	veil.add_child(panel)
 	var column := VBoxContainer.new()
 	column.add_theme_constant_override(&"separation", 16)

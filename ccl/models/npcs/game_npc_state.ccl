@@ -1,0 +1,10 @@
+model GameNpcState {
+	NpcId: int64;
+	Transform: ActorTransformState;
+	Health: HealthStat;
+	Stamina: StaminaStat;
+	Progression: ProgressionStat;
+	Disposition: NpcDispositionState;
+	Memory: NpcMemoryState;
+	Relationships: NpcRelationshipState[];
+}

@@ -2,7 +2,7 @@
 
 @obfuscate
 @obfuscate_path
-class_name LumenfallWorldSummary
+class_name GameWorldSummary
 
 const MODEL_ID_LUMENFALL_WORLD_SUMMARY = 1
 
@@ -15,12 +15,12 @@ var last_played_unix: int
 func get_model_id() -> int:
 	return MODEL_ID_LUMENFALL_WORLD_SUMMARY
 
-func clone_empty() -> LumenfallWorldSummary:
-	return LumenfallWorldSummary.new()
+func clone_empty() -> GameWorldSummary:
+	return GameWorldSummary.new()
 
 
-func deep_clone() -> LumenfallWorldSummary:
-	var clone := LumenfallWorldSummary.new()
+func deep_clone() -> GameWorldSummary:
+	var clone := GameWorldSummary.new()
 	clone.world_id = world_id
 	clone.display_name = display_name
 	clone.played_seconds = played_seconds
@@ -48,8 +48,8 @@ func serialize_binary() -> PackedByteArray:
 
 	return buffer.data_array
 
-static func deserialize_binary(data: PackedByteArray) -> LumenfallWorldSummary:
-	var model_result := LumenfallWorldSummary.new()
+static func deserialize_binary(data: PackedByteArray) -> GameWorldSummary:
+	var model_result := GameWorldSummary.new()
 	if not data or data.is_empty():
 		return model_result
 

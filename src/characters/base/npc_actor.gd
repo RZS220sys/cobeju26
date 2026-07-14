@@ -5,7 +5,7 @@ var npc_id: NpcCatalog.Id
 var display_name: String
 var model_id: ModelCatalog.Id
 var interaction_prompt: String
-var persistent_state: LumenfallNpcState
+var persistent_state: GameNpcState
 
 var _world_id: String = ""
 var _marker: Label3D
@@ -162,8 +162,8 @@ func _restore_position() -> void:
 
 
 @private
-func _transient_state() -> LumenfallNpcState:
-	var state := LumenfallNpcState.new()
+func _transient_state() -> GameNpcState:
+	var state := GameNpcState.new()
 	state.npc_id = identity_id()
 	state.mood = NpcCatalog.Mood.CALM
 	state.behavior = NpcCatalog.Behavior.IDLE

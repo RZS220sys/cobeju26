@@ -1,0 +1,5 @@
+model WorldMetadataState {
+	WorldId: string;
+	PlayedSeconds: float64;
+	LastPlayedUnix: int64;
+}

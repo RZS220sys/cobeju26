@@ -1,0 +1,7 @@
+model NpcDispositionState {
+	Mood: int32;
+	Behavior: int32;
+	TrustPlayer: float32;
+	Fear: float32;
+	Hope: float32;
+}

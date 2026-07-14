@@ -1,0 +1,8 @@
+model GameSettings {
+	MasterVolume: float32;
+	MouseSensitivity: float32;
+	InvertVertical: bool;
+	FieldOfView: float32;
+	Fullscreen: bool;
+	ReduceMotion: bool;
+}

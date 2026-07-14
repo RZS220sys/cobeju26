@@ -4,10 +4,10 @@ extends CanvasLayer
 signal region_selected(region_id: RegionCatalog.Id)
 signal closed
 
-var world_state: LumenfallWorldState
+var world_state: GameWorldState
 
 
-func configure(state_value: LumenfallWorldState) -> void:
+func configure(state_value: GameWorldState) -> void:
 	world_state = state_value
 
 
@@ -29,8 +29,8 @@ func _build_interface() -> void:
 	frame.set_anchors_preset(Control.PRESET_CENTER)
 	frame.position = Vector2(-650.0, -330.0)
 	frame.size = Vector2(1300.0, 660.0)
-	frame.theme = LumenfallUiTheme.create()
-	frame.add_theme_stylebox_override(&"panel", LumenfallUiTheme.panel())
+	frame.theme = GameUiTheme.create()
+	frame.add_theme_stylebox_override(&"panel", GameUiTheme.panel())
 	veil.add_child(frame)
 	var column := VBoxContainer.new()
 	column.add_theme_constant_override(&"separation", 16)
@@ -65,7 +65,7 @@ func _build_interface() -> void:
 func _add_region_card(parent: HBoxContainer, region_id: RegionCatalog.Id, heading: String, description: String, discovery_item: ItemCatalog.Id, color: Color) -> void:
 	var card := PanelContainer.new()
 	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	card.add_theme_stylebox_override(&"panel", LumenfallUiTheme.card())
+	card.add_theme_stylebox_override(&"panel", GameUiTheme.card())
 	parent.add_child(card)
 	var content := VBoxContainer.new()
 	content.add_theme_constant_override(&"separation", 15)

@@ -2,7 +2,7 @@
 
 @obfuscate
 @obfuscate_path
-class_name LumenfallSettings
+class_name GameSettings
 
 const MODEL_ID_LUMENFALL_SETTINGS = 5
 
@@ -17,12 +17,12 @@ var reduce_motion: bool
 func get_model_id() -> int:
 	return MODEL_ID_LUMENFALL_SETTINGS
 
-func clone_empty() -> LumenfallSettings:
-	return LumenfallSettings.new()
+func clone_empty() -> GameSettings:
+	return GameSettings.new()
 
 
-func deep_clone() -> LumenfallSettings:
-	var clone := LumenfallSettings.new()
+func deep_clone() -> GameSettings:
+	var clone := GameSettings.new()
 	clone.schema_version = schema_version
 	clone.master_volume = master_volume
 	clone.mouse_sensitivity = mouse_sensitivity
@@ -52,8 +52,8 @@ func serialize_binary() -> PackedByteArray:
 
 	return buffer.data_array
 
-static func deserialize_binary(data: PackedByteArray) -> LumenfallSettings:
-	var model_result := LumenfallSettings.new()
+static func deserialize_binary(data: PackedByteArray) -> GameSettings:
+	var model_result := GameSettings.new()
 	if not data or data.is_empty():
 		return model_result
 

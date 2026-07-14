@@ -48,7 +48,7 @@ func _test_ccl_round_trip() -> void:
 	original.quest_stage = QuestCatalog.Stage.LISTEN_TO_ASTER
 	original.gold_coins = 41
 	original.completed_quest_ids.append(QuestCatalog.Id.THE_FIRST_CROSSING)
-	var decoded := LumenfallWorldState.deserialize_binary(original.serialize_binary())
+	var decoded := GameWorldState.deserialize_binary(original.serialize_binary())
 	_expect(is_instance_valid(decoded), "CCL world state decodes")
 	_expect(decoded.display_name == "Juniper", "CCL preserves traveler name")
 	_expect(decoded.quest_stage == QuestCatalog.Stage.LISTEN_TO_ASTER and decoded.gold_coins == 41, "CCL preserves progression and currency")
@@ -56,7 +56,7 @@ func _test_ccl_round_trip() -> void:
 	var settings := SettingsRepository.defaults()
 	settings.mouse_sensitivity = 0.0037
 	settings.reduce_motion = true
-	var decoded_settings := LumenfallSettings.deserialize_binary(settings.serialize_binary())
+	var decoded_settings := GameSettings.deserialize_binary(settings.serialize_binary())
 	_expect(is_equal_approx(decoded_settings.mouse_sensitivity, 0.0037) and decoded_settings.reduce_motion, "CCL preserves accessibility settings")
 
 
@@ -147,10 +147,10 @@ func _test_source_architecture() -> void:
 		var declared_name := match_result.get_string(1)
 		var expected_name := path.get_file().get_basename().to_pascal_case()
 		_expect(declared_name == expected_name, "class_name matches filename: %s" % path)
-		_expect("LumenfallTypes" not in source, "No global type bucket returns: %s" % path)
-	var world_source := FileAccess.get_file_as_string("res://src/world/runtime/lumenfall_world.gd")
-	_expect(world_source.count("\n") + 1 < 120, "LumenfallWorld remains a small composition root")
-	_expect("match world_state.quest_stage" not in world_source, "Quest policy stays outside LumenfallWorld")
+		_expect("GameTypes" not in source, "No global type bucket returns: %s" % path)
+	var world_source := FileAccess.get_file_as_string("res://src/world/runtime/game_world.gd")
+	_expect(world_source.count("\n") + 1 < 120, "GameWorld remains a small composition root")
+	_expect("match world_state.quest_stage" not in world_source, "Quest policy stays outside GameWorld")
 
 
 @private
@@ -182,7 +182,7 @@ func _test_complete_first_crossing() -> void:
 	var state := _make_world_state(world_id)
 	# Begin at the first interaction so the cinematic tween cannot make the test timing-dependent.
 	state.quest_stage = QuestCatalog.Stage.WAKE_WAYSTONE
-	var world := LumenfallWorld.new()
+	var world := GameWorld.new()
 	world.configure(state)
 	root.add_child(world)
 	for _frame: int in range(8):
@@ -278,8 +278,8 @@ func _test_complete_first_crossing() -> void:
 
 
 @private
-func _make_world_state(world_id: String) -> LumenfallWorldState:
-	var state := LumenfallWorldState.new()
+func _make_world_state(world_id: String) -> GameWorldState:
+	var state := GameWorldState.new()
 	state.schema_version = 1
 	state.world_id = world_id
 	state.display_name = "Automated Wayfarer"

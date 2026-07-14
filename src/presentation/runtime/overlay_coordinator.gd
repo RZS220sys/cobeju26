@@ -3,10 +3,10 @@ extends Node
 
 signal traveler_book_requested
 
-var world_state: LumenfallWorldState
+var world_state: GameWorldState
 var player: WayfarerController
 var camera_rig: ThirdPersonCamera
-var settings: LumenfallSettings
+var settings: GameSettings
 var persistence: WorldPersistenceController
 var workshop: WorkshopMenu
 var region_map: RegionMap
@@ -14,7 +14,7 @@ var _pause_menu: PauseMenu
 var _settings_panel: SettingsPanel
 
 
-func configure(state: LumenfallWorldState, player_controller: WayfarerController, camera_controller: ThirdPersonCamera, game_settings: LumenfallSettings, persistence_controller: WorldPersistenceController) -> void:
+func configure(state: GameWorldState, player_controller: WayfarerController, camera_controller: ThirdPersonCamera, game_settings: GameSettings, persistence_controller: WorldPersistenceController) -> void:
 	world_state = state
 	player = player_controller
 	camera_rig = camera_controller

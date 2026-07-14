@@ -1,16 +1,16 @@
 class_name SettingsRepository
 extends RefCounted
 
-const SETTINGS_PATH := "user://lumenfall_settings.cclbin"
+const SETTINGS_PATH := "user://game_settings.cclbin"
 
 
-static func load_settings() -> LumenfallSettings:
+static func load_settings() -> GameSettings:
 	if not FileAccess.file_exists(SETTINGS_PATH):
 		return defaults()
 	var file := FileAccess.open(SETTINGS_PATH, FileAccess.READ)
 	if not is_instance_valid(file):
 		return defaults()
-	var settings := LumenfallSettings.deserialize_binary(file.get_buffer(file.get_length()))
+	var settings := GameSettings.deserialize_binary(file.get_buffer(file.get_length()))
 	file.close()
 	if not is_instance_valid(settings) or settings.schema_version <= 0:
 		return defaults()
@@ -20,7 +20,7 @@ static func load_settings() -> LumenfallSettings:
 	return settings
 
 
-static func save_settings(settings: LumenfallSettings) -> bool:
+static func save_settings(settings: GameSettings) -> bool:
 	settings.schema_version = 1
 	var temporary_path := SETTINGS_PATH + ".tmp"
 	var file := FileAccess.open(temporary_path, FileAccess.WRITE)
@@ -36,7 +36,7 @@ static func save_settings(settings: LumenfallSettings) -> bool:
 	return DirAccess.rename_absolute(temporary, target) == OK
 
 
-static func apply(settings: LumenfallSettings) -> void:
+static func apply(settings: GameSettings) -> void:
 	var master_index := AudioServer.get_bus_index(&"Master")
 	if master_index >= 0:
 		AudioServer.set_bus_volume_db(master_index, linear_to_db(maxf(0.001, settings.master_volume)))
@@ -46,8 +46,8 @@ static func apply(settings: LumenfallSettings) -> void:
 		DisplayServer.window_set_mode(desired_mode)
 
 
-static func defaults() -> LumenfallSettings:
-	var settings := LumenfallSettings.new()
+static func defaults() -> GameSettings:
+	var settings := GameSettings.new()
 	settings.schema_version = 1
 	settings.master_volume = 0.78
 	settings.mouse_sensitivity = 0.0024

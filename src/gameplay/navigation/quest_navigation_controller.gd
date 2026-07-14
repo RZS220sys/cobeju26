@@ -1,7 +1,7 @@
 class_name QuestNavigationController
 extends Node
 
-var world_state: LumenfallWorldState
+var world_state: GameWorldState
 var player: WayfarerController
 var camera_rig: ThirdPersonCamera
 var hud: GameHud
@@ -11,7 +11,7 @@ var quests: QuestCoordinator
 var travel: WorldTravelController
 
 
-func configure(state: LumenfallWorldState, player_controller: WayfarerController, camera_controller: ThirdPersonCamera, game_hud: GameHud, hearthmere: HearthmereVillage, region_landmarks: RegionLandmarks, quest_coordinator: QuestCoordinator, travel_controller: WorldTravelController) -> void:
+func configure(state: GameWorldState, player_controller: WayfarerController, camera_controller: ThirdPersonCamera, game_hud: GameHud, hearthmere: HearthmereVillage, region_landmarks: RegionLandmarks, quest_coordinator: QuestCoordinator, travel_controller: WorldTravelController) -> void:
 	world_state = state
 	player = player_controller
 	camera_rig = camera_controller

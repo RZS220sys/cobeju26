@@ -3,15 +3,15 @@ extends Node
 
 var player: WayfarerController
 var camera_rig: ThirdPersonCamera
-var world_state: LumenfallWorldState
+var world_state: GameWorldState
 var hud: GameHud
-var soundscape: LumenfallSoundscape
+var soundscape: GameSoundscape
 var quests: QuestCoordinator
 var persistence: WorldPersistenceController
 var _last_safe_position: Vector3 = Vector3(0.0, 0.1, 9.0)
 
 
-func configure(player_controller: WayfarerController, camera_controller: ThirdPersonCamera, state: LumenfallWorldState, game_hud: GameHud, audio: LumenfallSoundscape, quest_coordinator: QuestCoordinator, persistence_controller: WorldPersistenceController) -> void:
+func configure(player_controller: WayfarerController, camera_controller: ThirdPersonCamera, state: GameWorldState, game_hud: GameHud, audio: GameSoundscape, quest_coordinator: QuestCoordinator, persistence_controller: WorldPersistenceController) -> void:
 	player = player_controller
 	camera_rig = camera_controller
 	world_state = state

@@ -115,7 +115,7 @@ func adjust_zoom(amount: float) -> void:
 	_desired_zoom = clampf(_desired_zoom + amount, minimum_zoom, maximum_zoom)
 
 
-func apply_settings(settings: LumenfallSettings) -> void:
+func apply_settings(settings: GameSettings) -> void:
 	mouse_sensitivity = settings.mouse_sensitivity
 	invert_vertical = settings.invert_vertical
 	reduce_motion = settings.reduce_motion

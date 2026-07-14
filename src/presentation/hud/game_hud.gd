@@ -27,13 +27,13 @@ func _build_interface() -> void:
 	var root := Control.new()
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	root.theme = LumenfallUiTheme.create()
+	root.theme = GameUiTheme.create()
 	add_child(root)
 	_objective_panel = PanelContainer.new()
 	_objective_panel.name = "ObjectiveRibbon"
 	_objective_panel.position = Vector2(28.0, 26.0)
 	_objective_panel.custom_minimum_size = Vector2(470.0, 84.0)
-	_objective_panel.add_theme_stylebox_override(&"panel", LumenfallUiTheme.panel())
+	_objective_panel.add_theme_stylebox_override(&"panel", GameUiTheme.panel())
 	root.add_child(_objective_panel)
 	_objective_label = Label.new()
 	_objective_label.text = "✦  Find your footing"
@@ -44,7 +44,7 @@ func _build_interface() -> void:
 	_interaction_panel.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 	_interaction_panel.position = Vector2(-245.0, -120.0)
 	_interaction_panel.size = Vector2(490.0, 72.0)
-	_interaction_panel.add_theme_stylebox_override(&"panel", LumenfallUiTheme.panel())
+	_interaction_panel.add_theme_stylebox_override(&"panel", GameUiTheme.panel())
 	_interaction_panel.visible = false
 	root.add_child(_interaction_panel)
 	_interaction_label = Label.new()
@@ -54,7 +54,7 @@ func _build_interface() -> void:
 	_dialogue_panel.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 	_dialogue_panel.position = Vector2(-500.0, -240.0)
 	_dialogue_panel.size = Vector2(1000.0, 122.0)
-	_dialogue_panel.add_theme_stylebox_override(&"panel", LumenfallUiTheme.panel())
+	_dialogue_panel.add_theme_stylebox_override(&"panel", GameUiTheme.panel())
 	_dialogue_panel.visible = false
 	root.add_child(_dialogue_panel)
 	var dialogue_row := HBoxContainer.new()
@@ -73,7 +73,7 @@ func _build_interface() -> void:
 	var status := PanelContainer.new()
 	status.position = Vector2(28.0, 122.0)
 	status.custom_minimum_size = Vector2(330.0, 96.0)
-	status.add_theme_stylebox_override(&"panel", LumenfallUiTheme.panel())
+	status.add_theme_stylebox_override(&"panel", GameUiTheme.panel())
 	root.add_child(status)
 	var status_column := VBoxContainer.new()
 	status_column.add_theme_constant_override(&"separation", 5)
@@ -86,13 +86,13 @@ func _build_interface() -> void:
 	_health_bar.name = "VitalityBar"
 	_health_bar.show_percentage = false
 	_health_bar.custom_minimum_size.y = 15.0
-	_health_bar.add_theme_stylebox_override(&"background", LumenfallUiTheme.meter_background())
-	_health_bar.add_theme_stylebox_override(&"fill", LumenfallUiTheme.meter_fill())
+	_health_bar.add_theme_stylebox_override(&"background", GameUiTheme.meter_background())
+	_health_bar.add_theme_stylebox_override(&"fill", GameUiTheme.meter_fill())
 	status_column.add_child(_health_bar)
 	_lens_badge = PanelContainer.new()
 	_lens_badge.position = Vector2(28.0, 232.0)
 	_lens_badge.custom_minimum_size = Vector2(220.0, 62.0)
-	_lens_badge.add_theme_stylebox_override(&"panel", LumenfallUiTheme.card())
+	_lens_badge.add_theme_stylebox_override(&"panel", GameUiTheme.card())
 	_lens_badge.visible = false
 	root.add_child(_lens_badge)
 	var lens_label := Label.new()
@@ -105,7 +105,7 @@ func _build_interface() -> void:
 	_navigation_panel.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	_navigation_panel.position = Vector2(-270.0, 22.0)
 	_navigation_panel.size = Vector2(540.0, 74.0)
-	_navigation_panel.add_theme_stylebox_override(&"panel", LumenfallUiTheme.panel())
+	_navigation_panel.add_theme_stylebox_override(&"panel", GameUiTheme.panel())
 	_navigation_panel.visible = false
 	root.add_child(_navigation_panel)
 	_navigation_label = Label.new()

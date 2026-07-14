@@ -1,7 +1,7 @@
 class_name WorldSelectionScreen
 extends Control
 
-signal world_selected(state: LumenfallWorldState)
+signal world_selected(state: GameWorldState)
 
 const BACKGROUND_PATH := "res://assets/ui/title_screen/listening_stone_background.png"
 const MENU_LEFT_RATIO := 0.64
@@ -248,7 +248,7 @@ func _refresh_worlds() -> void:
 	_first_world_button = null
 	var index := WorldLibrary.list_worlds()
 	_empty_hint.visible = index.worlds.is_empty()
-	for summary: LumenfallWorldSummary in index.worlds:
+	for summary: GameWorldSummary in index.worlds:
 		if not is_instance_valid(summary):
 			continue
 		_add_world_row(summary)
@@ -259,7 +259,7 @@ func _refresh_worlds() -> void:
 
 
 @private
-func _add_world_row(summary: LumenfallWorldSummary) -> void:
+func _add_world_row(summary: GameWorldSummary) -> void:
 	var entry := WorldEntryButton.new()
 	entry.name = "Load_%s" % summary.world_id
 	entry.configure(summary, "LAST PLAYED %s" % RelativeTimeFormatter.format_since(summary.last_played_unix))

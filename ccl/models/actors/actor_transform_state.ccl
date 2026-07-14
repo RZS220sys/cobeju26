@@ -1,0 +1,9 @@
+model ActorTransformState {
+	PositionX: float32;
+	PositionY: float32;
+	PositionZ: float32;
+	RotationX: float32;
+	RotationY: float32;
+	RotationZ: float32;
+	IsInitialized: bool;
+}

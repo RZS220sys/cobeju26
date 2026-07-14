@@ -4,7 +4,7 @@ extends Node3D
 var interactable: WorldInteractable
 
 
-func configure(state: LumenfallWorldState) -> void:
+func configure(state: GameWorldState) -> void:
 	var choice := _choice(state)
 	if choice == CrossingChoiceCatalog.Id.NONE:
 		queue_free()
@@ -26,7 +26,7 @@ func configure(state: LumenfallWorldState) -> void:
 
 
 @private
-func _choice(state: LumenfallWorldState) -> CrossingChoiceCatalog.Id:
+func _choice(state: GameWorldState) -> CrossingChoiceCatalog.Id:
 	for choice: CrossingChoiceCatalog.Id in [CrossingChoiceCatalog.Id.SHELTER, CrossingChoiceCatalog.Id.BRIDGE, CrossingChoiceCatalog.Id.WITNESS]:
 		if Inventory.count(state, CrossingChoiceCatalog.evidence_item(choice)) > 0:
 			return choice

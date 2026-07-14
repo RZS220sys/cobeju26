@@ -6,67 +6,35 @@
 #[$gd:AddAnnotation("@obfuscate")]
 #[$gd:AddAnnotation("@obfuscate_path")]
 
-model LumenfallWorldSummary {
-	WorldId: string;
-	DisplayName: string;
-	PlayedSeconds: float64;
-	QuestStage: int32;
-	LastPlayedUnix: int64;
-}
+// Reusable persistent value shapes.
+import "models/stats/health_stat.ccl";
+import "models/stats/stamina_stat.ccl";
+import "models/stats/progression_stat.ccl";
+import "models/actors/actor_transform_state.ccl";
 
-model LumenfallWorldIndex {
-	SchemaVersion: int32;
-	Worlds: LumenfallWorldSummary[];
-	LastWorldId: string;
-}
+// Player-owned state.
+import "models/inventory/item_stack.ccl";
+import "models/inventory/inventory_state.ccl";
+import "models/crafting/learned_recipe.ccl";
+import "models/crafting/recipe_book_state.ccl";
+import "models/player/player_identity_state.ccl";
+import "models/player/orbit_camera_state.ccl";
+import "models/player/wallet_state.ccl";
+import "models/player/tutorial_progress_state.ccl";
+import "models/player/game_player_state.ccl";
 
-model LumenfallWorldState {
-	SchemaVersion: int32;
-	WorldId: string;
-	DisplayName: string;
-	PlayedSeconds: float64;
-	PlayerX: float32;
-	PlayerY: float32;
-	PlayerZ: float32;
-	PlayerYaw: float32;
-	QuestStage: int32;
-	ActiveQuestId: int32;
-	CompletedQuestIds: int32[];
-	InventoryItemIds: int32[];
-	InventoryItemCounts: int32[];
-	UnlockedRecipeIds: int32[];
-	GoldCoins: int32;
-	RiftglassPieces: int32;
-	CurrentHealth: float32;
-	MaximumHealth: float32;
-	LastPlayedUnix: int64;
-	TutorialStage: int32;
-}
+// NPC-owned state.
+import "models/npcs/npc_disposition_state.ccl";
+import "models/npcs/npc_memory_state.ccl";
+import "models/npcs/npc_relationship_state.ccl";
+import "models/npcs/game_npc_state.ccl";
 
-model LumenfallNpcState {
-	SchemaVersion: int32;
-	NpcId: int32;
-	Mood: int32;
-	Behavior: int32;
-	TrustPlayer: float32;
-	Fear: float32;
-	Hope: float32;
-	PositionX: float32;
-	PositionY: float32;
-	PositionZ: float32;
-	ImportantEventIds: int32[];
-	RelationshipNpcIds: int32[];
-	RelationshipValues: float32[];
-	ChoiceIds: int32[];
-	HasPosition: bool;
-}
+// World-owned state and read models.
+import "models/world/quest_progress_state.ccl";
+import "models/world/world_metadata_state.ccl";
+import "models/world/game_world_state.ccl";
+import "models/world/game_world_summary.ccl";
+import "models/world/game_world_index.ccl";
 
-model LumenfallSettings {
-	SchemaVersion: int32;
-	MasterVolume: float32;
-	MouseSensitivity: float32;
-	InvertVertical: bool;
-	FieldOfView: float32;
-	Fullscreen: bool;
-	ReduceMotion: bool;
-}
+// User-owned configuration.
+import "models/settings/game_settings.ccl";

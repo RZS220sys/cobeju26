@@ -1,16 +1,16 @@
 class_name QuestCoordinator
 extends Node
 
-var world_state: LumenfallWorldState
+var world_state: GameWorldState
 var player: WayfarerController
 var hud: GameHud
-var world: LumenfallWorld
+var world: GameWorld
 var first_crossing: FirstCrossingQuest
 var names_in_wind: NamesInWindQuest
 var three_voices: ThreeVoicesQuest
 
 
-func configure(state: LumenfallWorldState, player_controller: WayfarerController, game_hud: GameHud, world_root: LumenfallWorld) -> void:
+func configure(state: GameWorldState, player_controller: WayfarerController, game_hud: GameHud, world_root: GameWorld) -> void:
 	world_state = state
 	player = player_controller
 	hud = game_hud

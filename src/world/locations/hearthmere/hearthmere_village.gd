@@ -32,7 +32,7 @@ func _ready() -> void:
 	field_map = interactions.field_map
 
 
-func apply_crossing_choice(state: LumenfallWorldState) -> void:
+func apply_crossing_choice(state: GameWorldState) -> void:
 	if is_instance_valid(_aftermath):
 		return
 	_aftermath = CrossingAftermath.new()

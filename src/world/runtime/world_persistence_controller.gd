@@ -3,12 +3,12 @@ extends Node
 
 const AUTOSAVE_INTERVAL := 20.0
 
-var world_state: LumenfallWorldState
+var world_state: GameWorldState
 var player: WayfarerController
 var _autosave_elapsed: float = 0.0
 
 
-func configure(state: LumenfallWorldState, player_controller: WayfarerController) -> void:
+func configure(state: GameWorldState, player_controller: WayfarerController) -> void:
 	world_state = state
 	player = player_controller
 

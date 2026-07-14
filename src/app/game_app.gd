@@ -1,4 +1,4 @@
-class_name LumenfallApp
+class_name GameApp
 extends Node
 
 

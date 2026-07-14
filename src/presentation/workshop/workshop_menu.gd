@@ -5,7 +5,7 @@ signal crafted_lantern_lens
 signal crafted_memory_compass
 signal closed
 
-var world_state: LumenfallWorldState
+var world_state: GameWorldState
 var _material_label: Label
 var _craft_button: Button
 var _status_label: Label
@@ -14,7 +14,7 @@ var _description: Label
 var _showing_compass: bool = false
 
 
-func configure(state_value: LumenfallWorldState) -> void:
+func configure(state_value: GameWorldState) -> void:
 	world_state = state_value
 
 
@@ -36,8 +36,8 @@ func _build_interface() -> void:
 	frame.set_anchors_preset(Control.PRESET_CENTER)
 	frame.position = Vector2(-420.0, -285.0)
 	frame.size = Vector2(840.0, 570.0)
-	frame.theme = LumenfallUiTheme.create()
-	frame.add_theme_stylebox_override(&"panel", LumenfallUiTheme.panel())
+	frame.theme = GameUiTheme.create()
+	frame.add_theme_stylebox_override(&"panel", GameUiTheme.panel())
 	veil.add_child(frame)
 	var column := VBoxContainer.new()
 	column.add_theme_constant_override(&"separation", 16)
@@ -56,7 +56,7 @@ func _build_interface() -> void:
 	column.add_child(explanation)
 	var recipe := PanelContainer.new()
 	recipe.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	recipe.add_theme_stylebox_override(&"panel", LumenfallUiTheme.card())
+	recipe.add_theme_stylebox_override(&"panel", GameUiTheme.card())
 	column.add_child(recipe)
 	var recipe_column := VBoxContainer.new()
 	recipe_column.add_theme_constant_override(&"separation", 12)

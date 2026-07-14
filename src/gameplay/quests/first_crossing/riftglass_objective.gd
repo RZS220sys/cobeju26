@@ -8,12 +8,12 @@ const POSITIONS: Array[Vector3] = [
 ]
 
 var spawned_shards: Array[RiftglassShard] = []
-var world_state: LumenfallWorldState
+var world_state: GameWorldState
 var hud: GameHud
-var world: LumenfallWorld
+var world: GameWorld
 
 
-func configure(state: LumenfallWorldState, game_hud: GameHud, world_root: LumenfallWorld) -> void:
+func configure(state: GameWorldState, game_hud: GameHud, world_root: GameWorld) -> void:
 	world_state = state
 	hud = game_hud
 	world = world_root

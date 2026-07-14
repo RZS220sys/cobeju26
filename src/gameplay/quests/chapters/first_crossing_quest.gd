@@ -1,10 +1,10 @@
 class_name FirstCrossingQuest
 extends Node
 
-var world_state: LumenfallWorldState
+var world_state: GameWorldState
 var player: WayfarerController
 var hud: GameHud
-var world: LumenfallWorld
+var world: GameWorld
 
 var _rift_visual: Node3D
 var riftglass: RiftglassObjective
@@ -12,7 +12,7 @@ var first_hunt: FirstHuntObjective
 var regional_instruments: RegionalInstrumentObjective
 
 
-func configure(state_value: LumenfallWorldState, player_value: WayfarerController, hud_value: GameHud, world_value: LumenfallWorld) -> void:
+func configure(state_value: GameWorldState, player_value: WayfarerController, hud_value: GameHud, world_value: GameWorld) -> void:
 	world_state = state_value
 	player = player_value
 	hud = hud_value

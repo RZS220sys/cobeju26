@@ -1,14 +1,14 @@
-class_name LumenfallWorld
+class_name GameWorld
 extends Node3D
 
 signal traveler_book_requested
 
-var world_state: LumenfallWorldState
+var world_state: GameWorldState
 var player: WayfarerController
 var camera_rig: ThirdPersonCamera
 var hud: GameHud
-var soundscape: LumenfallSoundscape
-var settings: LumenfallSettings
+var soundscape: GameSoundscape
+var settings: GameSettings
 var streamer: WorldStreamer
 var village: HearthmereVillage
 var region_landmarks: RegionLandmarks
@@ -23,13 +23,13 @@ var interaction_controller: InteractionController
 var navigation_controller: QuestNavigationController
 
 
-func configure(state: LumenfallWorldState) -> void:
+func configure(state: GameWorldState) -> void:
 	world_state = state
 
 
 @override
 func _ready() -> void:
-	name = "LumenfallWorld"
+	name = "GameWorld"
 	settings = SettingsRepository.load_settings()
 	SettingsRepository.apply(settings)
 	EnvironmentBuilder.build(self)
@@ -47,7 +47,7 @@ func _build_world_content() -> void:
 	player.rotation.y = world_state.player_yaw
 	add_child(player)
 	player.configure_health(world_state.current_health, world_state.maximum_health)
-	soundscape = LumenfallSoundscape.new()
+	soundscape = GameSoundscape.new()
 	soundscape.configure(player)
 	add_child(soundscape)
 	streamer = WorldStreamer.new()

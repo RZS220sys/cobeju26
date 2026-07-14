@@ -1,0 +1,3 @@
+model WalletState {
+	GoldCoins: int64;
+}

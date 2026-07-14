@@ -2,13 +2,13 @@ class_name WorldLibrary
 extends RefCounted
 
 
-static func list_worlds() -> LumenfallWorldIndex:
+static func list_worlds() -> GameWorldIndex:
 	var index := WorldIndexRepository.load_index()
 	index.worlds.sort_custom(_recent_world_first)
 	return index
 
 
-static func create_world(display_name: String) -> LumenfallWorldState:
+static func create_world(display_name: String) -> GameWorldState:
 	var world_id := "%d_%d" % [floori(Time.get_unix_time_from_system()), Time.get_ticks_msec() % 100000]
 	var state := _new_state(world_id, _clean_name(display_name))
 	NpcStateRepository.create_world_states(world_id)
@@ -16,17 +16,17 @@ static func create_world(display_name: String) -> LumenfallWorldState:
 	return state
 
 
-static func load_world(world_id: String) -> LumenfallWorldState:
+static func load_world(world_id: String) -> GameWorldState:
 	return WorldStateRepository.load_state(world_id)
 
 
-static func save_world(state: LumenfallWorldState) -> bool:
+static func save_world(state: GameWorldState) -> bool:
 	if not WorldStateRepository.save_state(state):
 		return false
 	return WorldIndexRepository.upsert(state)
 
 
-static func reset_world(world_id: String) -> LumenfallWorldState:
+static func reset_world(world_id: String) -> GameWorldState:
 	var previous := load_world(world_id)
 	var display_name := previous.display_name if is_instance_valid(previous) else "Wayfarer"
 	_delete_world_directory(world_id)
@@ -46,8 +46,8 @@ static func shareable_directory(world_id: String) -> String:
 
 
 @private
-static func _new_state(world_id: String, display_name: String) -> LumenfallWorldState:
-	var state := LumenfallWorldState.new()
+static func _new_state(world_id: String, display_name: String) -> GameWorldState:
+	var state := GameWorldState.new()
 	state.schema_version = WorldStateRepository.SCHEMA_VERSION
 	state.world_id = world_id
 	state.display_name = display_name
@@ -74,7 +74,7 @@ static func _clean_name(display_name: String) -> String:
 
 
 @private
-static func _recent_world_first(left: LumenfallWorldSummary, right: LumenfallWorldSummary) -> bool:
+static func _recent_world_first(left: GameWorldSummary, right: GameWorldSummary) -> bool:
 	if not is_instance_valid(left):
 		return false
 	if not is_instance_valid(right):

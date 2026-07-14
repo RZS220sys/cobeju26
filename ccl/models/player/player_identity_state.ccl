@@ -1,0 +1,3 @@
+model PlayerIdentityState {
+	DisplayName: string;
+}

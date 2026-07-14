@@ -2,7 +2,7 @@
 
 @obfuscate
 @obfuscate_path
-class_name LumenfallNpcState
+class_name GameNpcState
 
 const MODEL_ID_LUMENFALL_NPC_STATE = 4
 
@@ -25,12 +25,12 @@ var has_position: bool
 func get_model_id() -> int:
 	return MODEL_ID_LUMENFALL_NPC_STATE
 
-func clone_empty() -> LumenfallNpcState:
-	return LumenfallNpcState.new()
+func clone_empty() -> GameNpcState:
+	return GameNpcState.new()
 
 
-func deep_clone() -> LumenfallNpcState:
-	var clone := LumenfallNpcState.new()
+func deep_clone() -> GameNpcState:
+	var clone := GameNpcState.new()
 	clone.schema_version = schema_version
 	clone.npc_id = npc_id
 	clone.mood = mood
@@ -92,8 +92,8 @@ func serialize_binary() -> PackedByteArray:
 
 	return buffer.data_array
 
-static func deserialize_binary(data: PackedByteArray) -> LumenfallNpcState:
-	var model_result := LumenfallNpcState.new()
+static func deserialize_binary(data: PackedByteArray) -> GameNpcState:
+	var model_result := GameNpcState.new()
 	if not data or data.is_empty():
 		return model_result
 

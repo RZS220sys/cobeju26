@@ -1,10 +1,10 @@
 class_name ThreeVoicesQuest
 extends Node
 
-var world_state: LumenfallWorldState
+var world_state: GameWorldState
 var player: WayfarerController
 var hud: GameHud
-var world: LumenfallWorld
+var world: GameWorld
 var _choice_ui: CrossingChoice
 
 const VOICE_ITEMS: Dictionary[InteractionCatalog.Id, ItemCatalog.Id] = {
@@ -14,7 +14,7 @@ const VOICE_ITEMS: Dictionary[InteractionCatalog.Id, ItemCatalog.Id] = {
 }
 
 
-func configure(state_value: LumenfallWorldState, player_value: WayfarerController, hud_value: GameHud, world_value: LumenfallWorld) -> void:
+func configure(state_value: GameWorldState, player_value: WayfarerController, hud_value: GameHud, world_value: GameWorld) -> void:
 	world_state = state_value
 	player = player_value
 	hud = hud_value

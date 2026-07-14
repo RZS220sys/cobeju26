@@ -7,11 +7,11 @@ const INTERACTION_RANGE := 3.25
 
 var player: WayfarerController
 var hud: GameHud
-var soundscape: LumenfallSoundscape
+var soundscape: GameSoundscape
 var _focused_target: Node3D
 
 
-func configure(player_controller: WayfarerController, game_hud: GameHud, audio: LumenfallSoundscape) -> void:
+func configure(player_controller: WayfarerController, game_hud: GameHud, audio: GameSoundscape) -> void:
 	player = player_controller
 	hud = game_hud
 	soundscape = audio

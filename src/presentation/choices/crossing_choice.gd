@@ -12,13 +12,13 @@ func _ready() -> void:
 	veil.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	veil.color = Color(0.01, 0.02, 0.045, 0.95)
 	veil.mouse_filter = Control.MOUSE_FILTER_STOP
-	veil.theme = LumenfallUiTheme.create()
+	veil.theme = GameUiTheme.create()
 	add_child(veil)
 	var frame := PanelContainer.new()
 	frame.set_anchors_preset(Control.PRESET_CENTER)
 	frame.position = Vector2(-650.0, -315.0)
 	frame.size = Vector2(1300.0, 630.0)
-	frame.add_theme_stylebox_override(&"panel", LumenfallUiTheme.panel())
+	frame.add_theme_stylebox_override(&"panel", GameUiTheme.panel())
 	veil.add_child(frame)
 	var column := VBoxContainer.new()
 	column.add_theme_constant_override(&"separation", 18)
@@ -47,7 +47,7 @@ func _ready() -> void:
 func _add_choice(parent: HBoxContainer, choice_id: CrossingChoiceCatalog.Id, heading: String, copy: String, color: Color) -> void:
 	var card := PanelContainer.new()
 	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	card.add_theme_stylebox_override(&"panel", LumenfallUiTheme.card())
+	card.add_theme_stylebox_override(&"panel", GameUiTheme.card())
 	parent.add_child(card)
 	var content := VBoxContainer.new()
 	content.add_theme_constant_override(&"separation", 15)
