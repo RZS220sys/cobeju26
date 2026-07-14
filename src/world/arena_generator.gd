@@ -4,6 +4,7 @@ extends Node3D
 var arena_radius: float = 20.0
 var seed_value: int = 1907
 var _random := RandomNumberGenerator.new()
+var _occupied_positions: Array[Vector3] = []
 
 
 @override
@@ -76,6 +77,7 @@ func _build_ruins() -> void:
 
 @private
 func _create_pillar(at: Vector3, height: float, width: float, index: int) -> void:
+	_occupied_positions.append(at)
 	var body := StaticBody3D.new()
 	body.collision_layer = 32
 	body.collision_mask = 0
@@ -112,6 +114,17 @@ func _create_pillar(at: Vector3, height: float, width: float, index: int) -> voi
 
 
 func random_open_position(minimum_radius: float = 4.0, maximum_radius: float = 17.5) -> Vector3:
-	var angle := _random.randf_range(0.0, TAU)
-	var radius := sqrt(_random.randf_range(minimum_radius * minimum_radius, maximum_radius * maximum_radius))
-	return Vector3(cos(angle) * radius, 0.8, sin(angle) * radius)
+	for _attempt: int in range(32):
+		var angle := _random.randf_range(0.0, TAU)
+		var radius := sqrt(_random.randf_range(minimum_radius * minimum_radius, maximum_radius * maximum_radius))
+		var candidate := Vector3(cos(angle) * radius, 0.8, sin(angle) * radius)
+		if candidate.distance_to(Vector3(0.0, 0.8, 14.2)) < 2.5:
+			continue
+		var clear := true
+		for occupied: Vector3 in _occupied_positions:
+			if candidate.distance_to(occupied + Vector3.UP * 0.8) < 2.0:
+				clear = false
+				break
+		if clear:
+			return candidate
+	return Vector3(minimum_radius, 0.8, 0.0)

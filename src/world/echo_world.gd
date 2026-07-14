@@ -22,6 +22,7 @@ var _pause_overlay: PauseOverlay
 var _manually_paused: bool = false
 var _soundscape: ArchiveSoundscape
 var _tide: TideDefinition
+var _tutorial_overlay: TutorialOverlay
 
 
 func configure(profile: PalimpsestSaveData, soundscape: ArchiveSoundscape) -> void:
@@ -129,6 +130,14 @@ func _build_expedition() -> void:
 	add_child(_hud)
 	_hud.bind_player(_player)
 	_hud.set_objective(_echoes, _echo_goal)
+	if is_instance_valid(_profile) and not _profile.tutorial_seen:
+		_open_tutorial()
+	else:
+		_start_intro_sequence()
+
+
+@private
+func _start_intro_sequence() -> void:
 	_hud.show_toast("WITNESS // FIRST CONTACT", "Lamplighter. Seven echoes will open the cyan descent seal. The Hollows are memories that learned hunger.", 7.5)
 	var tide_timer := Timer.new()
 	tide_timer.one_shot = true
@@ -139,6 +148,26 @@ func _build_expedition() -> void:
 	)
 	add_child(tide_timer)
 	tide_timer.start()
+
+
+@private
+func _open_tutorial() -> void:
+	_set_combat_paused(true)
+	_tutorial_overlay = TutorialOverlay.new()
+	_tutorial_overlay.name = "Orientation"
+	_tutorial_overlay.dismissed.connect(_dismiss_tutorial)
+	add_child(_tutorial_overlay)
+
+
+@private
+func _dismiss_tutorial() -> void:
+	if is_instance_valid(_profile):
+		_profile.tutorial_seen = true
+		ArchiveSaveManager.save_profile(_profile)
+	if is_instance_valid(_tutorial_overlay):
+		_tutorial_overlay.queue_free()
+	_set_combat_paused(false)
+	_start_intro_sequence()
 
 
 @override
@@ -228,6 +257,11 @@ func _on_shard_collected(shard: MemoryShard) -> void:
 func _on_enemy_defeated(_at: Vector3, enemy: HollowEnemy) -> void:
 	_kills += 1
 	_player.reward_defeat()
+	_soundscape.play_disperse(enemy.is_boss)
+	var burst := MemoryBurst.new()
+	burst.configure(ArchivePalette.magenta() if enemy.is_boss else ArchivePalette.cyan(), enemy.is_boss)
+	add_child(burst)
+	burst.global_position = _at + Vector3.UP * 0.7
 	if _kills == 1:
 		_hud.show_toast("HOLLOW DISPERSED", "Not killed. Returned to a memory without teeth.", 3.8)
 	if enemy.is_boss:

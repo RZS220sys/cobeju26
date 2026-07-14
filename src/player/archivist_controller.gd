@@ -124,6 +124,9 @@ func _physics_process(delta: float) -> void:
 	if is_instance_valid(_camera):
 		var shake_amount := _camera_shake * _camera_shake * 0.22
 		_camera.position = Vector3(0.0, 13.0, 10.5) + Vector3(sin(_camera_time * 61.0), sin(_camera_time * 47.0), 0.0) * shake_amount
+	if is_instance_valid(_model_visual):
+		var movement_bob := minf(1.0, velocity.length() / maxf(0.01, move_speed))
+		_model_visual.position.y = sin(_camera_time * 10.0) * 0.035 * movement_bob
 	_attack_cooldown = maxf(0.0, _attack_cooldown - delta)
 	_dash_cooldown = maxf(0.0, _dash_cooldown - delta)
 	_invulnerable_time = maxf(0.0, _invulnerable_time - delta)

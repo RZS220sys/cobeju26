@@ -12,7 +12,7 @@ Player is the last Lamplighter. Enter unstable memory islands, fight Hollows, re
 - **Meaning:** enemies and upgrades express the theme: memory can shelter, distort, or imprison.
 - **Discovery:** short environmental stories + Archive journal assemble into multiple valid interpretations.
 - **Return:** procedural island layouts, escalating weekly-style “Tides,” build choices, three story alignments/endings.
-- **Respect:** no grind walls, no dark patterns, adjustable difficulty, remappable controls, readable UI.
+- **Respect:** no grind walls, no dark patterns, adjustable difficulty, keyboard/controller parity, readable UI.
 
 ## Release scope
 

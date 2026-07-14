@@ -181,3 +181,9 @@ func _apply_profile_settings() -> void:
 	AudioServer.set_bus_mute(0, _profile.master_volume <= 0.001)
 	if _profile.fullscreen:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
+	else:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		var window_size := Vector2i(1280, 720)
+		DisplayServer.window_set_size(window_size)
+		var screen_size := DisplayServer.screen_get_size()
+		DisplayServer.window_set_position(Vector2i(floori(float(screen_size.x - window_size.x) / 2.0), floori(float(screen_size.y - window_size.y) / 2.0)))

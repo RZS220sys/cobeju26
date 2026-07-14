@@ -9,6 +9,7 @@ var _collect_sound: AudioStreamWAV
 var _hurt_sound: AudioStreamWAV
 var _resonance_sound: AudioStreamWAV
 var _verdict_sound: AudioStreamWAV
+var _disperse_sound: AudioStreamWAV
 
 
 @override
@@ -29,6 +30,7 @@ func _ready() -> void:
 	_hurt_sound = _build_chime(0.24, 115.0, 72.0, 0.42)
 	_resonance_sound = _build_chime(0.65, 180.0, 760.0, 0.45)
 	_verdict_sound = _build_chime(1.15, 240.0, 980.0, 0.4)
+	_disperse_sound = _build_chime(0.32, 310.0, 120.0, 0.3)
 
 
 func play_cast() -> void:
@@ -49,6 +51,10 @@ func play_resonance() -> void:
 
 func play_verdict() -> void:
 	_play_event(_verdict_sound, -5.0, 1.0)
+
+
+func play_disperse(large: bool = false) -> void:
+	_play_event(_disperse_sound, -6.0 if large else -10.0, 0.72 if large else randf_range(0.94, 1.08))
 
 
 func set_combat_intensity(intensity: float) -> void:

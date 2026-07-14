@@ -16,6 +16,7 @@ var is_boss: bool = false
 var _attack_cooldown: float = 0.0
 var _stagger_velocity: Vector3 = Vector3.ZERO
 var _special_cooldown: float = 2.2
+var _visual_time: float = 0.0
 var _visual: MeshInstance3D
 var _model_visual: Node3D
 
@@ -113,6 +114,9 @@ func _build_body() -> void:
 
 @override
 func _physics_process(delta: float) -> void:
+	_visual_time += delta
+	if is_instance_valid(_model_visual):
+		_model_visual.position.y = sin(_visual_time * (2.2 if is_boss else 3.4) + float(get_instance_id() % 17)) * (0.055 if is_boss else 0.035)
 	_attack_cooldown = maxf(0.0, _attack_cooldown - delta)
 	_special_cooldown = maxf(0.0, _special_cooldown - delta)
 	_stagger_velocity = _stagger_velocity.move_toward(Vector3.ZERO, delta * 18.0)

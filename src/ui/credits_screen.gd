@@ -25,7 +25,7 @@ func _ready() -> void:
 	title.add_theme_color_override(&"font_color", ArchivePalette.amber())
 	column.add_child(title)
 	var body := Label.new()
-	body.text = "LANTERNS OF THE DROWNED ARCHIVE\n\nCreated as an original interactive work\nDesign • code • narrative • procedural art direction\n\nBuilt with Godot / WGodot\nPhysics by Jolt Physics\nPersistence models generated with CCL\n\nThank you for carrying the lantern.\n\nNo generative live services, telemetry, advertisements,\nor paid progression are used by this game."
+	body.text = "LANTERNS OF THE DROWNED ARCHIVE\n\nCreated as an original interactive work\nDesign • code • narrative • art direction\n\nGodot Engine / WGodot — MIT License\nJolt Physics — MIT License\nPersistence models generated with CCL\nFull notices are packaged with the game.\n\nThank you for carrying the lantern.\n\nNo generative live services, telemetry, advertisements,\nor paid progression are used by this game."
 	body.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	body.add_theme_font_size_override(&"font_size", 18)
 	body.add_theme_color_override(&"font_color", ArchivePalette.bone())

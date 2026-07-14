@@ -106,7 +106,14 @@ func _on_volume_changed(value: float) -> void:
 @private
 func _on_fullscreen_toggled(enabled: bool) -> void:
 	_profile.fullscreen = enabled
-	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN if enabled else DisplayServer.WINDOW_MODE_MAXIMIZED)
+	if enabled:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
+	else:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		var window_size := Vector2i(1280, 720)
+		DisplayServer.window_set_size(window_size)
+		var screen_size := DisplayServer.screen_get_size()
+		DisplayServer.window_set_position(Vector2i(floori(float(screen_size.x - window_size.x) / 2.0), floori(float(screen_size.y - window_size.y) / 2.0)))
 
 
 @private

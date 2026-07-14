@@ -78,7 +78,7 @@ func _build_interface() -> void:
 	premise_panel.add_child(premise)
 
 	var start_button := Button.new()
-	start_button.text = "BEGIN THE FIRST DESCENT"
+	start_button.text = _descent_button_text()
 	start_button.custom_minimum_size = Vector2(430.0, 58.0)
 	start_button.pressed.connect(_on_start_pressed)
 	layout.add_child(start_button)
@@ -107,7 +107,7 @@ func _build_interface() -> void:
 	_add_limited(layout, _status_label, 610.0)
 
 	var footer := Label.new()
-	footer.text = "v0.1 — THE ARCHIVE IS LISTENING"
+	footer.text = "v1.0.0 — THE ARCHIVE IS LISTENING"
 	footer.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
 	footer.position = Vector2(-290.0, -42.0)
 	footer.add_theme_font_size_override(&"font_size", 12)
@@ -142,3 +142,12 @@ func _profile_status() -> String:
 	if not is_instance_valid(_profile) or _profile.expeditions == 0:
 		return "No memory has been committed yet."
 	return "Archive depth %d  •  %d echoes witnessed  •  %d fragments available" % [_profile.story_depth, _profile.total_echoes, _profile.archive_fragments]
+
+
+@private
+func _descent_button_text() -> String:
+	if not is_instance_valid(_profile) or _profile.expeditions == 0:
+		return "BEGIN THE FIRST DESCENT"
+	if _profile.story_depth < 4:
+		return "DESCEND TOWARD ARCHIVE DEPTH %d" % (_profile.story_depth + 1)
+	return "ENTER ANOTHER TIDE"
