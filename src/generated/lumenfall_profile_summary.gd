@@ -4,7 +4,7 @@
 @obfuscate_path
 class_name LumenfallProfileSummary
 
-const MODEL_ID_LUMENFALL_PROFILE_SUMMARY = 2
+const MODEL_ID_LUMENFALL_PROFILE_SUMMARY = 1
 
 var profile_id: String
 var display_name: String

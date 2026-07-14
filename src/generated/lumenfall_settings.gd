@@ -4,7 +4,7 @@
 @obfuscate_path
 class_name LumenfallSettings
 
-const MODEL_ID_LUMENFALL_SETTINGS = 5
+const MODEL_ID_LUMENFALL_SETTINGS = 4
 
 var schema_version: int
 var master_volume: float

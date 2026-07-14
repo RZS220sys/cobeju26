@@ -4,7 +4,7 @@
 @obfuscate_path
 class_name LumenfallProfileIndex
 
-const MODEL_ID_LUMENFALL_PROFILE_INDEX = 3
+const MODEL_ID_LUMENFALL_PROFILE_INDEX = 2
 
 var schema_version: int
 var profiles: Array[LumenfallProfileSummary]

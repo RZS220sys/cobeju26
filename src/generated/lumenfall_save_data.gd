@@ -4,7 +4,7 @@
 @obfuscate_path
 class_name LumenfallSaveData
 
-const MODEL_ID_LUMENFALL_SAVE_DATA = 4
+const MODEL_ID_LUMENFALL_SAVE_DATA = 3
 
 var schema_version: int
 var profile_id: String
@@ -15,11 +15,11 @@ var player_y: float
 var player_z: float
 var player_yaw: float
 var quest_stage: int
-var active_quest_id: String
-var completed_quest_ids: Array[String]
-var inventory_item_ids: Array[String]
+var active_quest_id: int
+var completed_quest_ids: Array[int]
+var inventory_item_ids: Array[int]
 var inventory_item_counts: Array[int]
-var unlocked_recipe_ids: Array[String]
+var unlocked_recipe_ids: Array[int]
 var gold_coins: int
 var riftglass_pieces: int
 var current_health: float
@@ -84,21 +84,15 @@ func serialize_binary() -> PackedByteArray:
 
 	buffer.put_32(self.quest_stage)
 
-	var active_quest_id_bytes = self.active_quest_id.to_utf8_buffer()
-	buffer.put_u32(active_quest_id_bytes.size())
-	buffer.put_data(active_quest_id_bytes)
+	buffer.put_32(self.active_quest_id)
 
 	buffer.put_u32(self.completed_quest_ids.size())
 	for item in self.completed_quest_ids:
-		var item_bytes = item.to_utf8_buffer()
-		buffer.put_u32(item_bytes.size())
-		buffer.put_data(item_bytes)
+		buffer.put_32(item)
 
 	buffer.put_u32(self.inventory_item_ids.size())
 	for item in self.inventory_item_ids:
-		var item_bytes = item.to_utf8_buffer()
-		buffer.put_u32(item_bytes.size())
-		buffer.put_data(item_bytes)
+		buffer.put_32(item)
 
 	buffer.put_u32(self.inventory_item_counts.size())
 	for item in self.inventory_item_counts:
@@ -106,9 +100,7 @@ func serialize_binary() -> PackedByteArray:
 
 	buffer.put_u32(self.unlocked_recipe_ids.size())
 	for item in self.unlocked_recipe_ids:
-		var item_bytes = item.to_utf8_buffer()
-		buffer.put_u32(item_bytes.size())
-		buffer.put_data(item_bytes)
+		buffer.put_32(item)
 
 	buffer.put_32(self.gold_coins)
 
@@ -177,36 +169,25 @@ static func deserialize_binary(data: PackedByteArray) -> LumenfallSaveData:
 
 	if buffer.get_size() - buffer.get_position() < 4:
 		return model_result
-	var active_quest_id_len := buffer.get_u32()
-	if active_quest_id_len > buffer.get_size() - buffer.get_position():
-		return model_result
-	model_result.active_quest_id = buffer.get_data_bytes(active_quest_id_len).get_string_from_utf8()
+	model_result.active_quest_id = buffer.get_32()
 
 	if buffer.get_size() - buffer.get_position() < 4:
 		return model_result
 	var completed_quest_ids_len := buffer.get_u32()
-	model_result.completed_quest_ids = [] as Array[String]
+	model_result.completed_quest_ids = [] as Array[int]
 	for i in range(completed_quest_ids_len):
 		if buffer.get_size() - buffer.get_position() < 4:
 			return model_result
-		var item_len := buffer.get_u32()
-		if item_len > buffer.get_size() - buffer.get_position():
-			return model_result
-		var item: String = buffer.get_data_bytes(item_len).get_string_from_utf8()
-		model_result.completed_quest_ids.append(item)
+		model_result.completed_quest_ids.append(buffer.get_32())
 
 	if buffer.get_size() - buffer.get_position() < 4:
 		return model_result
 	var inventory_item_ids_len := buffer.get_u32()
-	model_result.inventory_item_ids = [] as Array[String]
+	model_result.inventory_item_ids = [] as Array[int]
 	for i in range(inventory_item_ids_len):
 		if buffer.get_size() - buffer.get_position() < 4:
 			return model_result
-		var item_len := buffer.get_u32()
-		if item_len > buffer.get_size() - buffer.get_position():
-			return model_result
-		var item: String = buffer.get_data_bytes(item_len).get_string_from_utf8()
-		model_result.inventory_item_ids.append(item)
+		model_result.inventory_item_ids.append(buffer.get_32())
 
 	if buffer.get_size() - buffer.get_position() < 4:
 		return model_result
@@ -220,15 +201,11 @@ static func deserialize_binary(data: PackedByteArray) -> LumenfallSaveData:
 	if buffer.get_size() - buffer.get_position() < 4:
 		return model_result
 	var unlocked_recipe_ids_len := buffer.get_u32()
-	model_result.unlocked_recipe_ids = [] as Array[String]
+	model_result.unlocked_recipe_ids = [] as Array[int]
 	for i in range(unlocked_recipe_ids_len):
 		if buffer.get_size() - buffer.get_position() < 4:
 			return model_result
-		var item_len := buffer.get_u32()
-		if item_len > buffer.get_size() - buffer.get_position():
-			return model_result
-		var item: String = buffer.get_data_bytes(item_len).get_string_from_utf8()
-		model_result.unlocked_recipe_ids.append(item)
+		model_result.unlocked_recipe_ids.append(buffer.get_32())
 
 	if buffer.get_size() - buffer.get_position() < 4:
 		return model_result

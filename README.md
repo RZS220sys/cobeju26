@@ -1,16 +1,17 @@
-# PALIMPSEST: Lanterns of the Drowned Archive
+# LUMENFALL: The First Crossing
 
-Original 3D action-exploration roguelite built with Godot/WGodot. Recover living memories from a submerged archive, assemble a combat build during each descent, and decide whether the past should be preserved, released, or revised.
+Third-person 3D fantasy adventure built with Godot/WGodot. Explore a living frontier, recover people and roads erased from memory, and make choices that physically reshape Hearthmere.
 
-## Play
+## Controls
 
 - WASD: move
-- Mouse / J: aim and cast
-- Space: invulnerable slip
-- Q: resonance field
+- Mouse: orbit camera
+- Wheel: zoom
+- E: interact
+- Left click: strike
+- Space: jump
+- Shift: sprint
 - Escape: pause
-
-Each descent requires seven echoes and an Index Warden dispersal before extraction. Two recovered echoes offer run-changing annotations. Victories advance a four-descent narrative spine; the campaign has three non-binary endings and remains replayable afterward.
 
 ## Development
 
@@ -20,8 +21,4 @@ godot --headless --path . --script res://tests/test_runner.gd
 godot --wg run
 ```
 
-CCL save models are generated from `ccl/save_data.ccl` with `scripts/GenerateModels.ps1`; never edit `src/generated` manually.
-
-All narrative, code, procedural geometry, synthesized audio, and project-specific art are original to this project. No telemetry, ads, network requirement, or paid progression.
-
-
+CCL models come from `ccl/save_data.ccl`; regenerate with `scripts/GenerateModels.ps1`. Never hand-edit `src/generated`.

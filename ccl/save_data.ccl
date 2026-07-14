@@ -1,5 +1,4 @@
-// Append new fields only. Old saves must remain readable.
-#[CCLVersion("v0.0.5")]
+#[CCLVersion("v0.1.0")]
 #[SerializationType("binary")]
 #[AddCloneMethods(true)]
 #[StrictBinaryParsing(false)]
@@ -7,33 +6,6 @@
 #[$gd:AddAnnotation("@obfuscate")]
 #[$gd:AddAnnotation("@obfuscate_path")]
 
-model PalimpsestSaveData {
-	SchemaVersion: int32;
-	Expeditions: int32;
-	SuccessfulExpeditions: int32;
-	TotalEchoes: int32;
-	TotalHollows: int32;
-	ArchiveFragments: int32;
-	UnlockedBoons: string[];
-	DiscoveredRecords: string[];
-	WitnessAffinity: int32;
-	MercyAffinity: int32;
-	ContinuanceAffinity: int32;
-	BestTimeSeconds: float64;
-	LastSeed: int64;
-	Difficulty: int32;
-	AimAssist: bool;
-	MasterVolume: float32;
-	Fullscreen: bool;
-	TutorialSeen: bool;
-	StoryDepth: int32;
-	EndingsSeen: string[];
-	WickRank: int32;
-	LensRank: int32;
-	ReservoirRank: int32;
-}
-
-// LUMENFALL profile index. Additional fields must be appended.
 model LumenfallProfileSummary {
 	ProfileId: string;
 	DisplayName: string;
@@ -48,7 +20,6 @@ model LumenfallProfileIndex {
 	LastProfileId: string;
 }
 
-// One file per named character. Additional fields must be appended.
 model LumenfallSaveData {
 	SchemaVersion: int32;
 	ProfileId: string;
@@ -59,11 +30,11 @@ model LumenfallSaveData {
 	PlayerZ: float32;
 	PlayerYaw: float32;
 	QuestStage: int32;
-	ActiveQuestId: string;
-	CompletedQuestIds: string[];
-	InventoryItemIds: string[];
+	ActiveQuestId: int32;
+	CompletedQuestIds: int32[];
+	InventoryItemIds: int32[];
 	InventoryItemCounts: int32[];
-	UnlockedRecipeIds: string[];
+	UnlockedRecipeIds: int32[];
 	GoldCoins: int32;
 	RiftglassPieces: int32;
 	CurrentHealth: float32;

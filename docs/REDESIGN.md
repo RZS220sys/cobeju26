@@ -38,14 +38,14 @@ Explore → notice a lived problem → help a character → world physically cha
 
 ## Architecture
 
-- `src/adventure/core`: app/session/profile/quest services.
-- `src/adventure/player`: controller, abilities, interaction, animation state.
-- `src/adventure/camera`: orbit/zoom/collision camera.
-- `src/adventure/world`: streaming terrain, regions, weather, encounters.
-- `src/adventure/characters`: NPC actors, schedules, dialogue, companion AI.
-- `src/adventure/quests`: data + event-driven objectives/cinematics.
-- `src/adventure/ui`: game-native HUD, menus, map, journal.
-- `assets/adventure`: rigged characters, creatures, buildings, props, UI/audio.
+- `src/core`: app/session/profile/gameplay catalogs.
+- `src/player`: controller, abilities, interaction, animation state.
+- `src/camera`: orbit/zoom/collision camera.
+- `src/world`: streaming terrain, regions, weather, encounters.
+- `src/characters`: NPC actors, schedules, dialogue, companion AI.
+- `src/quests`: event-driven objectives and cinematics.
+- `src/ui`: game-native HUD, menus, map, journal.
+- `assets/{models,textures,ui}`: authored runtime assets.
 
 ## First proof gate
 

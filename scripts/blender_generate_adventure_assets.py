@@ -6,7 +6,7 @@ import bpy
 
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "assets" / "adventure" / "models"
+OUT = ROOT / "assets" / "models"
 OUT.mkdir(parents=True, exist_ok=True)
 
 
